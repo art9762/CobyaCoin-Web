@@ -1,0 +1,21 @@
+line-length = 120
+target-version = "py312"
+exclude = ["alembic/versions"]
+
+[lint]
+select = [
+  "E",    # pycodestyle errors
+  "F",    # pyflakes
+  "I",    # isort
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+]
+ignore = [
+  "E501",  # line too long — handled by formatter where it matters
+  "B008",  # Depends() in function signature is idiomatic in FastAPI
+  "B904",  # `raise ... from e` is pedantic for FastAPI re-raising HTTPException
+  "E741",  # `l` for "lot" is fine inside tight list comprehensions
+]
+
+[lint.per-file-ignores]
+"alembic/env.py" = ["E402"]

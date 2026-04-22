@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cobya
+      POSTGRES_PASSWORD: cobya
+      POSTGRES_DB: cobya
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cobya"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://cobya:cobya@db:5432/cobya
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-me}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID:-}
+      ENABLE_TELEGRAM_AUTH: ${ENABLE_TELEGRAM_AUTH:-true}
+      ENABLE_GOOGLE_AUTH: ${ENABLE_GOOGLE_AUTH:-false}
+      ENABLE_APPLE_AUTH: ${ENABLE_APPLE_AUTH:-false}
+      ADMIN_HANDLES: ${ADMIN_HANDLES:-@societykolyan}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+    ports: ["8000:8000"]
+    command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build: ./frontend
+    depends_on: [backend]
+    environment:
+      VITE_API_URL: http://localhost:8000
+      VITE_TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-}
+      VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      VITE_APPLE_CLIENT_ID: ${APPLE_CLIENT_ID:-}
+    ports: ["5173:5173"]
+    command: ["sh", "-c", "npm install && npm run dev -- --host"]
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  pgdata:

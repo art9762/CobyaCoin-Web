@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+.env
+.env.local
+*.db
+*.db-journal
+
+# Node
+node_modules/
+dist/
+.DS_Store
+*.log
+.vite/
+
+# IDE
+.idea/
+.vscode/
+
+# Tests
+.coverage
+coverage/
+.pytest_cache/
+
+# Build
+*.egg-info/
+frontend/tsconfig.tsbuildinfo

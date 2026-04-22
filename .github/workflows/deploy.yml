@@ -1,0 +1,74 @@
+# Auto-deploy to a VPS over SSH.
+#
+# This workflow runs after the docker workflow successfully pushes images to
+# ghcr.io on main. It SSHes into a server and runs `docker compose pull && up`.
+#
+# Required secrets (Repository → Settings → Secrets → Actions):
+#   - DEPLOY_HOST        — server hostname or IP
+#   - DEPLOY_USER        — SSH user
+#   - DEPLOY_SSH_KEY     — private key (OpenSSH format, no passphrase)
+#   - DEPLOY_PATH        — absolute path on server where docker-compose.yml lives
+#   - GHCR_READ_TOKEN    — GitHub PAT with `read:packages` (for `docker login ghcr.io`)
+#
+# If any of these secrets are missing, the job is skipped — CI still passes.
+
+name: deploy
+
+on:
+  workflow_run:
+    workflows: ["docker"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check deployment secrets
+        id: check
+        run: |
+          missing=()
+          for s in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_PATH; do
+            if [ -z "${!s:-}" ]; then missing+=("$s"); fi
+          done
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::notice::Skipping deploy — missing secrets: ${missing[*]}. Add them in repo settings to enable auto-deploy."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+
+      - name: Set up SSH
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Pull latest images and restart
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          ssh -i ~/.ssh/id_ed25519 \
+              "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+              bash -se << 'EOF'
+          set -euo pipefail
+          cd "${{ secrets.DEPLOY_PATH }}"
+          echo "${{ secrets.GHCR_READ_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker compose pull
+          docker compose up -d --remove-orphans
+          docker image prune -f
+          EOF
