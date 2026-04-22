@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Reserve column">
+  <defs>
+    <linearGradient id="rg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6FB0FF"></stop>
+      <stop offset="100%" stop-color="#2260C7"></stop>
+    </linearGradient>
+  </defs>
+  
+  <rect x="30" y="24" width="140" height="16" rx="4" fill="url(#rg)"></rect>
+  <polygon points="20,44 180,44 160,56 40,56" fill="url(#rg)"></polygon>
+  <rect x="48" y="60" width="14" height="96" fill="url(#rg)"></rect>
+  <rect x="74" y="60" width="14" height="96" fill="url(#rg)"></rect>
+  <rect x="100" y="60" width="14" height="96" fill="url(#rg)"></rect>
+  <rect x="126" y="60" width="14" height="96" fill="url(#rg)"></rect>
+  <polygon points="20,156 180,156 160,168 40,168" fill="url(#rg)"></polygon>
+  <rect x="10" y="172" width="180" height="16" rx="4" fill="url(#rg)"></rect>
+</svg>

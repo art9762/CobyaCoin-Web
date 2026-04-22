@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Maple Leaves mark">
+  <defs>
+    <linearGradient id="mapleGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F26A4B"></stop>
+      <stop offset="100%" stop-color="#B1321C"></stop>
+    </linearGradient>
+  </defs>
+  
+  <path fill="url(#mapleGrad)" d="M100 16&#xA;    L112 56&#xA;    L150 38&#xA;    L138 76&#xA;    L180 80&#xA;    L150 108&#xA;    L176 138&#xA;    L132 132&#xA;    L140 172&#xA;    L100 150&#xA;    L60 172&#xA;    L68 132&#xA;    L24 138&#xA;    L50 108&#xA;    L20 80&#xA;    L62 76&#xA;    L50 38&#xA;    L88 56 Z"></path>
+  <path fill="#FFFFFF" fill-opacity=".18" d="M100 22 L108 54 L102 72 L100 150 Z"></path>
+</svg>

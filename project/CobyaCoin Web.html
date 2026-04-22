@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>CobyaCoin — pseudo-crypto exchange</title>
+<link rel="icon" href="assets/cobyalogo.png" />
+<style>
+/* =============================================================
+   CobyaCoin Design System — colors_and_type.css
+   Apple HIG + iOS 26 Liquid Glass interpretation
+   Dark-first, light-mode via [data-theme="light"]
+   ============================================================= */
+
+/* ---- Fonts -------------------------------------------------- */
+/* SF Pro is Apple-licensed; we substitute Geist (Vercel) as the
+   near-metric, simpler + bolder UI face. Mono uses JetBrains Mono.
+   Swap to SF Pro / SF Mono on Apple platforms with licensing. */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* =========================================================
+     COLORS — base palette (oklch for perceptual consistency)
+     ========================================================= */
+
+  /* Brand */
+  --cbc-amber-100: oklch(0.96 0.04 75);
+  --cbc-amber-200: oklch(0.90 0.08 74);
+  --cbc-amber-300: oklch(0.85 0.13 73);
+  --cbc-amber-400: oklch(0.82 0.15 71);
+  --cbc-amber-500: oklch(0.78 0.16 70);   /* primary */
+  --cbc-amber-600: oklch(0.70 0.16 65);
+  --cbc-amber-700: oklch(0.58 0.15 55);
+  --cbc-amber-800: oklch(0.44 0.12 50);
+
+  --maple-100:    oklch(0.94 0.04 30);
+  --maple-200:    oklch(0.86 0.10 30);
+  --maple-300:    oklch(0.76 0.16 30);
+  --maple-400:    oklch(0.68 0.19 30);
+  --maple-500:    oklch(0.60 0.20 30);    /* primary maple */
+  --maple-600:    oklch(0.52 0.19 28);
+  --maple-700:    oklch(0.42 0.16 26);
+  --maple-800:    oklch(0.32 0.13 25);
+
+  --reserve-100:  oklch(0.94 0.04 245);
+  --reserve-300:  oklch(0.82 0.10 245);
+  --reserve-500:  oklch(0.65 0.15 245);   /* iOS systemBlue */
+  --reserve-700:  oklch(0.50 0.14 245);
+  --reserve-800:  oklch(0.38 0.12 246);
+
+  /* Neutrals — OLED-tuned cool grays */
+  --gray-0:   #06070A;   /* canvas dark */
+  --gray-1:   #0B0D12;
+  --gray-2:   #121520;
+  --gray-3:   #1A1E2A;
+  --gray-4:   #242A38;
+  --gray-5:   #343B4C;
+  --gray-6:   #505868;
+  --gray-7:   #727A8C;
+  --gray-8:   #9AA2B4;
+  --gray-9:   #C8CEDB;
+  --gray-10:  #EEF0F5;
+  --gray-11:  #FFFFFF;
+
+  /* Semantic (iOS system colors, dark-mode versions) */
+  --success-500: oklch(0.72 0.18 150);    /* systemGreen */
+  --danger-500:  oklch(0.65 0.22 25);     /* systemRed */
+  --warning-500: oklch(0.78 0.17 70);     /* systemOrange — same fam as CBC */
+  --info-500:    var(--reserve-500);
+
+  /* =========================================================
+     SEMANTIC TOKENS (dark default)
+     ========================================================= */
+
+  /* Surfaces — solid underlays behind glass */
+  --bg-canvas:     var(--gray-0);
+  --bg-elevated:   var(--gray-2);
+  --bg-sunken:     #000;
+
+  /* Foregrounds */
+  --fg-1:          var(--gray-11);          /* primary text */
+  --fg-2:          var(--gray-9);           /* secondary */
+  --fg-3:          var(--gray-8);           /* tertiary */
+  --fg-4:          var(--gray-7);           /* quaternary, placeholder */
+  --fg-on-amber:   #1A0F00;                 /* text on CBC amber */
+  --fg-on-maple:   #FFFFFF;
+  --fg-on-reserve: #FFFFFF;
+
+  /* Strokes */
+  --stroke-hairline: rgb(255 255 255 / .12);
+  --stroke-strong:   rgb(255 255 255 / .22);
+  --stroke-inset:    inset 0 0 0 1px var(--stroke-hairline);
+
+  /* Tints (semantic) */
+  --tint-primary:    var(--cbc-amber-500);
+  --tint-accent:     var(--maple-500);
+  --tint-reserve:    var(--reserve-500);
+  --tint-success:    var(--success-500);
+  --tint-danger:     var(--danger-500);
+  --tint-warning:    var(--warning-500);
+
+  /* =========================================================
+     LIQUID GLASS MATERIALS
+     ========================================================= */
+  /* Three depth tiers — use the composite vars or compose by hand */
+  --glass-thin-fill:     rgb(18 21 32 / .40);
+  --glass-regular-fill:  rgb(18 21 32 / .55);
+  --glass-thick-fill:    rgb(12 14 20 / .70);
+
+  --glass-thin-blur:     saturate(160%) blur(20px);
+  --glass-regular-blur:  saturate(180%) blur(30px);
+  --glass-thick-blur:    saturate(200%) blur(40px);
+
+  /* Tinted variants — overlay color washes over the fill */
+  --glass-tint-amber:    rgb(245 184 65 / .16);
+  --glass-tint-maple:    rgb(217 67 42 / .18);
+  --glass-tint-reserve:  rgb(58 141 255 / .18);
+  --glass-tint-success:  rgb(52 199 89 / .16);
+  --glass-tint-danger:   rgb(255 69 58 / .16);
+
+  /* Specular highlight (always-paired inset) */
+  --glass-specular:      inset 0 1px 0 rgb(255 255 255 / .22);
+
+  /* =========================================================
+     SHADOWS
+     ========================================================= */
+  --shadow-1:    0 1px 2px rgb(0 0 0 / .24);
+  --shadow-2:    0 8px 24px rgb(0 0 0 / .28), 0 1px 2px rgb(0 0 0 / .24);
+  --shadow-3:    0 24px 60px rgb(0 0 0 / .45), 0 2px 8px rgb(0 0 0 / .28);
+  --shadow-glow-cbc:    0 8px 32px rgb(245 184 65 / .28);
+  --shadow-glow-maple:  0 8px 32px rgb(217 67 42 / .28);
+
+  /* =========================================================
+     RADII
+     ========================================================= */
+  --r-xs:   6px;   /* inline chips */
+  --r-sm:  10px;   /* inputs */
+  --r-md:  14px;   /* buttons */
+  --r-lg:  22px;   /* cards */
+  --r-xl:  28px;   /* sheets */
+  --r-2xl: 36px;   /* hero cards */
+  --r-pill: 999px;
+
+  /* =========================================================
+     SPACING — 4pt grid
+     ========================================================= */
+  --s-0: 0;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 28px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-14: 56px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+
+  /* =========================================================
+     TYPOGRAPHY
+     ========================================================= */
+  --font-sans: 'SF Pro Display', 'Geist', -apple-system,
+               BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-text: 'SF Pro Text', 'Geist', -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular,
+               Menlo, Consolas, monospace;
+
+  /* Base scale — bolder + simpler than Apple default. Weight bumped +100. */
+  --t-display-size:   64px;  --t-display-lh:   64px;  --t-display-weight: 800;
+  --t-title1-size:    40px;  --t-title1-lh:    44px;  --t-title1-weight:  800;
+  --t-title2-size:    30px;  --t-title2-lh:    34px;  --t-title2-weight:  700;
+  --t-title3-size:    22px;  --t-title3-lh:    26px;  --t-title3-weight:  700;
+  --t-headline-size:  17px;  --t-headline-lh:  22px;  --t-headline-weight:700;
+  --t-body-size:      17px;  --t-body-lh:      24px;  --t-body-weight:    500;
+  --t-callout-size:   16px;  --t-callout-lh:   22px;  --t-callout-weight: 500;
+  --t-subhead-size:   14px;  --t-subhead-lh:   18px;  --t-subhead-weight: 600;
+  --t-footnote-size:  13px;  --t-footnote-lh:  18px;  --t-footnote-weight:500;
+  --t-caption-size:   11px;  --t-caption-lh:   14px;  --t-caption-weight: 600;
+
+  /* Letter spacing — Apple tightens large display sizes */
+  --t-tracking-display: -0.03em;
+  --t-tracking-title:   -0.02em;
+  --t-tracking-body:    -0.005em;
+  --t-tracking-caps:     0.08em;
+
+  /* =========================================================
+     MOTION
+     ========================================================= */
+  --ease-smooth:  cubic-bezier(0.22, 1, 0.36, 1);   /* SwiftUI default */
+  --ease-in-out:  cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1); /* only for press-release bounce */
+  --dur-fast:     120ms;
+  --dur-base:     220ms;
+  --dur-page:     320ms;
+  --dur-sheet:    480ms;
+  --dur-hero:     600ms;
+}
+
+/* ---- Light theme overrides --------------------------------- */
+[data-theme="light"] {
+  --bg-canvas:     #F2F3F7;
+  --bg-elevated:   #FFFFFF;
+  --bg-sunken:     #E7E9EF;
+
+  --fg-1: #07080C;
+  --fg-2: #2E3340;
+  --fg-3: #5B6275;
+  --fg-4: #8B92A5;
+
+  --stroke-hairline: rgb(0 0 0 / .08);
+  --stroke-strong:   rgb(0 0 0 / .14);
+  --stroke-inset:    inset 0 0 0 1px var(--stroke-hairline);
+
+  --glass-thin-fill:     rgb(255 255 255 / .55);
+  --glass-regular-fill:  rgb(255 255 255 / .72);
+  --glass-thick-fill:    rgb(255 255 255 / .85);
+
+  --glass-specular:      inset 0 1px 0 rgb(255 255 255 / .80);
+
+  --shadow-2: 0 8px 24px rgb(14 18 28 / .10), 0 1px 2px rgb(14 18 28 / .06);
+  --shadow-3: 0 24px 60px rgb(14 18 28 / .18), 0 2px 8px rgb(14 18 28 / .08);
+}
+
+/* =============================================================
+   SEMANTIC ELEMENT STYLES
+   (so any html element can inherit Apple-tuned type + color
+    without per-component styling)
+   ============================================================= */
+
+html, body {
+  background: var(--bg-canvas);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  font-size: var(--t-body-size);
+  line-height: var(--t-body-lh);
+  letter-spacing: var(--t-tracking-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'ss01', 'cv11', 'calt';
+}
+
+h1, .t-title1 {
+  font-size: var(--t-title1-size);
+  line-height: var(--t-title1-lh);
+  font-weight: var(--t-title1-weight);
+  letter-spacing: var(--t-tracking-title);
+  margin: 0;
+}
+h2, .t-title2 {
+  font-size: var(--t-title2-size);
+  line-height: var(--t-title2-lh);
+  font-weight: var(--t-title2-weight);
+  letter-spacing: var(--t-tracking-title);
+  margin: 0;
+}
+h3, .t-title3 {
+  font-size: var(--t-title3-size);
+  line-height: var(--t-title3-lh);
+  font-weight: var(--t-title3-weight);
+  letter-spacing: var(--t-tracking-title);
+  margin: 0;
+}
+.t-display {
+  font-size: var(--t-display-size);
+  line-height: var(--t-display-lh);
+  font-weight: var(--t-display-weight);
+  letter-spacing: var(--t-tracking-display);
+}
+.t-headline {
+  font-size: var(--t-headline-size);
+  line-height: var(--t-headline-lh);
+  font-weight: var(--t-headline-weight);
+}
+.t-body  { font-size: var(--t-body-size);  line-height: var(--t-body-lh);  font-weight: var(--t-body-weight); }
+.t-callout { font-size: var(--t-callout-size); line-height: var(--t-callout-lh); font-weight: var(--t-callout-weight); }
+.t-subhead { font-size: var(--t-subhead-size); line-height: var(--t-subhead-lh); font-weight: var(--t-subhead-weight); }
+.t-footnote, small { font-size: var(--t-footnote-size); line-height: var(--t-footnote-lh); font-weight: var(--t-footnote-weight); color: var(--fg-2); }
+.t-caption  { font-size: var(--t-caption-size); line-height: var(--t-caption-lh); font-weight: var(--t-caption-weight); color: var(--fg-3); }
+
+.t-ticker, code, kbd, samp, .t-mono {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-feature-settings: 'tnum', 'zero';
+  letter-spacing: 0;
+}
+
+/* =============================================================
+   GLASS UTILITIES — drop on any element
+   ============================================================= */
+
+.glass,
+.glass-regular {
+  background: var(--glass-regular-fill);
+  backdrop-filter: var(--glass-regular-blur);
+  -webkit-backdrop-filter: var(--glass-regular-blur);
+  box-shadow: var(--stroke-inset), var(--glass-specular), var(--shadow-2);
+  border-radius: var(--r-lg);
+}
+.glass-thin {
+  background: var(--glass-thin-fill);
+  backdrop-filter: var(--glass-thin-blur);
+  -webkit-backdrop-filter: var(--glass-thin-blur);
+  box-shadow: var(--stroke-inset), var(--glass-specular);
+}
+.glass-thick {
+  background: var(--glass-thick-fill);
+  backdrop-filter: var(--glass-thick-blur);
+  -webkit-backdrop-filter: var(--glass-thick-blur);
+  box-shadow: var(--stroke-inset), var(--glass-specular), var(--shadow-3);
+  border-radius: var(--r-xl);
+}
+
+/* Tinted glass washes — add on top of a .glass* base */
+.glass-tint-amber    { background: linear-gradient(var(--glass-tint-amber),   var(--glass-tint-amber)),   var(--glass-regular-fill); }
+.glass-tint-maple    { background: linear-gradient(var(--glass-tint-maple),   var(--glass-tint-maple)),   var(--glass-regular-fill); }
+.glass-tint-reserve  { background: linear-gradient(var(--glass-tint-reserve), var(--glass-tint-reserve)), var(--glass-regular-fill); }
+.glass-tint-success  { background: linear-gradient(var(--glass-tint-success), var(--glass-tint-success)), var(--glass-regular-fill); }
+.glass-tint-danger   { background: linear-gradient(var(--glass-tint-danger),  var(--glass-tint-danger)),  var(--glass-regular-fill); }
+
+/* =============================================================
+   BACKGROUND MESH — used as canvas behind glass
+   ============================================================= */
+.bg-mesh {
+  background-color: var(--gray-0);
+  background-image:
+    radial-gradient(60% 50% at 15% 10%,  rgb(245 184 65 / .22) 0%, transparent 60%),
+    radial-gradient(50% 40% at 85% 20%,  rgb(217 67 42 / .18) 0%, transparent 60%),
+    radial-gradient(60% 50% at 70% 90%,  rgb(58 141 255 / .16) 0%, transparent 60%),
+    radial-gradient(40% 30% at 10% 80%,  rgb(138 47 255 / .14) 0%, transparent 60%);
+}
+
+</style>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100vh; overflow-x: hidden; }
+  body {
+    background:
+      radial-gradient(60% 50% at 15% 10%, rgb(245 184 65 / .18) 0%, transparent 60%),
+      radial-gradient(50% 40% at 85% 20%, rgb(217 67 42 / .15) 0%, transparent 60%),
+      radial-gradient(60% 50% at 70% 90%, rgb(58 141 255 / .14) 0%, transparent 60%),
+      radial-gradient(40% 30% at 10% 80%, rgb(138 47 255 / .14) 0%, transparent 60%),
+      var(--gray-0);
+    background-attachment: fixed;
+    color: #fff;
+    font-family: 'SF Pro Display', 'Geist', -apple-system, sans-serif;
+  }
+  /* Animated mesh — gentle drift */
+  body::before {
+    content: ''; position: fixed; inset: -20%;
+    background-image:
+      radial-gradient(25% 20% at 20% 30%, rgb(245 184 65 / .18), transparent 60%),
+      radial-gradient(30% 25% at 80% 70%, rgb(217 67 42 / .16), transparent 60%),
+      radial-gradient(25% 20% at 60% 20%, rgb(58 141 255 / .14), transparent 60%);
+    animation: meshDrift 40s ease-in-out infinite alternate;
+    pointer-events: none; z-index: 0;
+  }
+  @keyframes meshDrift {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(4%, -3%) scale(1.05); }
+    100% { transform: translate(-3%, 2%) scale(1); }
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes coinSpin {
+    from { transform: rotateY(0deg); } to { transform: rotateY(360deg); }
+  }
+  @keyframes gpuPulse {
+    0%, 100% { box-shadow: inset 0 1px 0 #ffffff90, 0 0 8px #F5B84166; }
+    50% { box-shadow: inset 0 1px 0 #ffffff90, 0 0 18px #F5B841aa; }
+  }
+  @keyframes slide {
+    from { background-position: 0 0; } to { background-position: 80px 0; }
+  }
+  @keyframes tickerScroll {
+    from { transform: translateX(0); } to { transform: translateX(-50%); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: rgb(255 255 255 / .08); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / .16); }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  input::placeholder { color: #727A8C; }
+  button { font-family: inherit; }
+
+  .app-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; position: relative; z-index: 1; }
+  .ticker-strip {
+    position: fixed; top: 0; left: 0; right: 0; height: 36px; z-index: 20;
+    background: rgb(6 7 10 / .85);
+    backdrop-filter: saturate(180%) blur(30px);
+    -webkit-backdrop-filter: saturate(180%) blur(30px);
+    border-bottom: 1px solid rgb(255 255 255 / .06);
+    overflow: hidden; display: flex; align-items: center;
+  }
+  .ticker-strip-inner {
+    display: inline-flex; gap: 40px; white-space: nowrap;
+    animation: tickerScroll 60s linear infinite;
+    padding-left: 20px;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+/* Global state store for CobyaCoin web.
+   Simulates CBC price movement, mining production, order book, casino, etc.
+   Everything ticks on a 1s interval; components subscribe via useStore().
+*/
+
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+// ---------- helpers ----------
+const nf = (n, d = 0) => {
+  const s = Number(n).toFixed(d);
+  const [whole, dec] = s.split('.');
+  const w = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return dec ? `${w}.${dec}` : w;
+};
+const rnd = (a, b) => a + Math.random() * (b - a);
+const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const nowSec = () => Math.floor(Date.now() / 1000);
+
+// ---------- initial state ----------
+const seedPrice = 104.28;
+const seedHistory = (() => {
+  const pts = [];
+  let p = 96;
+  for (let i = 0; i < 120; i++) {
+    p += rnd(-1.4, 1.6);
+    p = clamp(p, 80, 120);
+    pts.push(p);
+  }
+  return pts;
+})();
+
+const initialState = {
+  user: {
+    handle: '@societykolyan',
+    joined: 'Mar 2024',
+    trades: 842,
+    cbc: 1204,
+    mpl: 128904,
+    frozen: 0,
+  },
+  price: seedPrice,
+  prevPrice: seedPrice,
+  history: seedHistory,
+  circuit: null, // { direction: 'up'|'down', until: ts }
+  reserve: {
+    active: true,
+    liquidityMpl: 412000,
+    liquidityCbc: 2904,
+  },
+  mining: {
+    level: 4,
+    gpus: 8,
+    maxGpus: 40,
+    pending: 0, // CBC pending collection
+    rate: 0.0032, // CBC / sec / GPU
+    lastTick: Date.now(),
+  },
+  orderBook: [
+    { id: 'o1', side: 'sell', user: '@IL76pd', cbc: 48, mpl: 4920, ago: '5h' },
+    { id: 'o2', side: 'sell', user: '@Dan9kov', cbc: 7, mpl: 740, ago: '12h' },
+    { id: 'o3', side: 'buy', user: '@unlucky_POvelitel', cbc: 120, mpl: 12480, ago: '18h' },
+    { id: 'o4', side: 'sell', user: '@kamila', cbc: 22, mpl: 2310, ago: '1h' },
+    { id: 'o5', side: 'buy', user: '@vlad_b', cbc: 14, mpl: 1436, ago: '40m' },
+    { id: 'o6', side: 'sell', user: '@anon_maple', cbc: 3, mpl: 316, ago: '4m' },
+  ],
+  trades: [
+    { id: 't1', buyer: '@kamila', seller: '@IL76pd', cbc: 12, mpl: 1255, ago: '2m' },
+    { id: 't2', buyer: '@societykolyan', seller: '@Dan9kov', cbc: 5, mpl: 523, ago: '8m' },
+    { id: 't3', buyer: '@vlad_b', seller: '@anon_maple', cbc: 30, mpl: 3120, ago: '22m' },
+  ],
+  auction: [
+    { id: 'a1', title: 'Кленовый туз', rarity: 'legendary', ends: 3600, bid: 82000, by: '@IL76pd' },
+    { id: 'a2', title: 'Монета №001', rarity: 'mythic', ends: 7200, bid: 144000, by: '@societykolyan' },
+    { id: 'a3', title: 'Медная GPU', rarity: 'rare', ends: 1800, bid: 9400, by: '@Dan9kov' },
+    { id: 'a4', title: 'Стикерпак Кобякоин', rarity: 'common', ends: 5400, bid: 2200, by: '@kamila' },
+  ],
+  casino: {
+    jackpotMpl: 412000,
+    lastRoll: null, // { result, color, payout, bet }
+    spinning: false,
+    wheelAngle: 0,
+  },
+  feed: [
+    { id: 'f1', emoji: '🎫', text: 'Referral applied — bonus 30 000 MPL + 90 CBC.', ago: '3m' },
+    { id: 'f2', emoji: '🔔', text: 'The Reserve bought your listing.', ago: '14m' },
+    { id: 'f3', emoji: '⛏', text: 'Mining yielded 1.2 CBC overnight.', ago: '2h' },
+  ],
+  leaderboard: [
+    { rank: 1, user: '@societykolyan', cbc: 412908, mpl: 4.1e6, tint: 'amber' },
+    { rank: 2, user: '@IL76pd', cbc: 201340, mpl: 2.0e6, tint: 'neutral' },
+    { rank: 3, user: '@Dan9kov', cbc: 180202, mpl: 1.8e6, tint: 'maple' },
+    { rank: 4, user: '@unlucky_POvelitel', cbc: 128904, mpl: 1.3e6, tint: 'neutral' },
+    { rank: 5, user: '@kamila', cbc: 118220, mpl: 1.1e6, tint: 'neutral' },
+    { rank: 6, user: '@vlad_b', cbc: 98440, mpl: 980000, tint: 'neutral' },
+    { rank: 7, user: '@anon_maple', cbc: 82110, mpl: 830000, tint: 'neutral' },
+    { rank: 8, user: '@eva_k', cbc: 74222, mpl: 760000, tint: 'neutral' },
+  ],
+};
+
+// ---------- store (singleton) ----------
+let state = JSON.parse(JSON.stringify(initialState));
+// restore from localStorage
+try {
+  const saved = JSON.parse(localStorage.getItem('cobya:state') || 'null');
+  if (saved && saved.user) {
+    state.user = { ...state.user, ...saved.user };
+    state.mining = { ...state.mining, ...saved.mining };
+    state.mining.lastTick = Date.now();
+  }
+} catch (e) {}
+
+const listeners = new Set();
+const notify = () => listeners.forEach((l) => l());
+const getState = () => state;
+const setState = (updater) => {
+  const next = typeof updater === 'function' ? updater(state) : { ...state, ...updater };
+  state = next;
+  try {
+    localStorage.setItem('cobya:state', JSON.stringify({ user: state.user, mining: state.mining }));
+  } catch (e) {}
+  notify();
+};
+
+const useStore = () => {
+  const [, force] = useState(0);
+  useEffect(() => {
+    const l = () => force((x) => x + 1);
+    listeners.add(l);
+    return () => listeners.delete(l);
+  }, []);
+  return state;
+};
+
+// ---------- actions ----------
+const actions = {
+  placeOrder({ side, cbc, mpl }) {
+    if (!cbc || !mpl) return { ok: false, err: 'Заполни объём и цену.' };
+    const u = state.user;
+    if (side === 'buy' && u.mpl < mpl) return { ok: false, err: '❌ Недостаточно MPL.' };
+    if (side === 'sell' && u.cbc < cbc) return { ok: false, err: '❌ Недостаточно CBC.' };
+    setState((s) => {
+      const user = { ...s.user };
+      if (side === 'buy') { user.mpl -= mpl; user.cbc += cbc; }
+      else { user.cbc -= cbc; user.mpl += mpl; }
+      user.trades += 1;
+      const trade = {
+        id: 't' + Date.now(),
+        buyer: side === 'buy' ? s.user.handle : '@Reserve',
+        seller: side === 'sell' ? s.user.handle : '@Reserve',
+        cbc, mpl, ago: 'now',
+      };
+      const feed = [{ id: 'f' + Date.now(), emoji: '✅', text: `Ордер исполнен — ${side === 'buy' ? 'куплено' : 'продано'} ${cbc} CBC за ${nf(mpl)} MPL.`, ago: 'now' }, ...s.feed].slice(0, 20);
+      // nudge price
+      const impact = (cbc / 400) * (side === 'buy' ? 1 : -1);
+      const newPrice = clamp(s.price + impact, 60, 180);
+      return { ...s, user, trades: [trade, ...s.trades].slice(0, 12), feed, price: newPrice, prevPrice: s.price };
+    });
+    return { ok: true };
+  },
+
+  buyGpu() {
+    const cost = 320;
+    if (state.user.mpl < cost) return { ok: false, err: '❌ Недостаточно MPL.' };
+    if (state.mining.gpus >= state.mining.maxGpus) return { ok: false, err: 'Улучши ферму.' };
+    setState((s) => ({
+      ...s,
+      user: { ...s.user, mpl: s.user.mpl - cost },
+      mining: { ...s.mining, gpus: s.mining.gpus + 1 },
+      feed: [{ id: 'f' + Date.now(), emoji: '⛏', text: `Куплен GPU. Ферма: ${s.mining.gpus + 1}/${s.mining.maxGpus}.`, ago: 'now' }, ...s.feed].slice(0, 20),
+    }));
+    return { ok: true };
+  },
+
+  sellGpu() {
+    if (state.mining.gpus <= 0) return { ok: false };
+    setState((s) => ({
+      ...s,
+      user: { ...s.user, mpl: s.user.mpl + 180 },
+      mining: { ...s.mining, gpus: s.mining.gpus - 1 },
+    }));
+    return { ok: true };
+  },
+
+  upgradeFarm() {
+    const cost = state.mining.level * 1000;
+    if (state.user.mpl < cost) return { ok: false, err: '❌ Недостаточно MPL.' };
+    setState((s) => ({
+      ...s,
+      user: { ...s.user, mpl: s.user.mpl - cost },
+      mining: { ...s.mining, level: s.mining.level + 1, maxGpus: s.mining.maxGpus + 10 },
+      feed: [{ id: 'f' + Date.now(), emoji: '🛠', text: `Ферма повышена до lvl ${s.mining.level + 1}.`, ago: 'now' }, ...s.feed].slice(0, 20),
+    }));
+    return { ok: true };
+  },
+
+  collectMining() {
+    const gained = state.mining.pending;
+    if (gained <= 0) return { ok: false };
+    setState((s) => ({
+      ...s,
+      user: { ...s.user, cbc: s.user.cbc + gained },
+      mining: { ...s.mining, pending: 0 },
+      feed: [{ id: 'f' + Date.now(), emoji: '💰', text: `Намайнено +${gained.toFixed(2)} CBC.`, ago: 'now' }, ...s.feed].slice(0, 20),
+    }));
+    return { ok: true, gained };
+  },
+
+  spinRoulette(bet, color) {
+    if (state.user.mpl < bet) return { ok: false, err: '❌ Недостаточно MPL.' };
+    if (state.casino.spinning) return { ok: false };
+    setState((s) => ({ ...s, casino: { ...s.casino, spinning: true } }));
+    const pockets = ['red', 'black', 'red', 'black', 'red', 'black', 'red', 'black', 'red', 'black', 'red', 'black', 'green'];
+    const landed = choice(pockets);
+    const wonMult = landed === color ? (color === 'green' ? 14 : 2) : 0;
+    const payout = wonMult * bet;
+    const rotations = 5 + Math.random() * 3;
+    const pocketIdx = pockets.indexOf(landed);
+    const finalAngle = rotations * 360 + (pocketIdx / pockets.length) * 360;
+    setState((s) => ({ ...s, casino: { ...s.casino, wheelAngle: s.casino.wheelAngle + finalAngle } }));
+    setTimeout(() => {
+      setState((s) => ({
+        ...s,
+        user: { ...s.user, mpl: s.user.mpl - bet + payout },
+        casino: {
+          ...s.casino,
+          spinning: false,
+          lastRoll: { result: landed, color: landed, payout, bet, won: payout > 0 },
+          jackpotMpl: payout > 0 ? Math.max(50000, s.casino.jackpotMpl - payout * 0.4) : s.casino.jackpotMpl + bet * 0.3,
+        },
+        feed: [{
+          id: 'f' + Date.now(),
+          emoji: payout > 0 ? '🎰' : '❌',
+          text: payout > 0 ? `Выигрыш +${nf(payout)} MPL (${landed}).` : `Выпало ${landed}. Ставка сгорела.`,
+          ago: 'now',
+        }, ...s.feed].slice(0, 20),
+      }));
+    }, 3200);
+    return { ok: true };
+  },
+
+  bidAuction(id, delta = 500) {
+    setState((s) => ({
+      ...s,
+      user: { ...s.user, mpl: s.user.mpl - (s.auction.find(a => a.id === id).bid + delta) + 0 },
+      auction: s.auction.map(a => a.id === id ? { ...a, bid: a.bid + delta, by: s.user.handle } : a),
+      feed: [{ id: 'f' + Date.now(), emoji: '📢', text: `Ставка повышена — ${s.auction.find(a => a.id === id).title}.`, ago: 'now' }, ...s.feed].slice(0, 20),
+    }));
+  },
+
+  redeemPromo(code) {
+    if (!code) return { ok: false };
+    const bonus = code.toLowerCase() === 'cobya26' ? 50000 : 5000;
+    setState((s) => ({
+      ...s,
+      user: { ...s.user, mpl: s.user.mpl + bonus },
+      feed: [{ id: 'f' + Date.now(), emoji: '🎫', text: `Промокод активирован — +${nf(bonus)} MPL.`, ago: 'now' }, ...s.feed].slice(0, 20),
+    }));
+    return { ok: true, bonus };
+  },
+};
+
+// ---------- ticker (global) ----------
+let tickerStarted = false;
+const startTicker = () => {
+  if (tickerStarted) return;
+  tickerStarted = true;
+  setInterval(() => {
+    setState((s) => {
+      // price random walk
+      const drift = rnd(-0.8, 0.85);
+      let p = clamp(s.price + drift, 60, 180);
+      // circuit breaker
+      let circuit = s.circuit;
+      if (circuit && Date.now() > circuit.until) circuit = null;
+      const hist = [...s.history.slice(1), p];
+      // mining accrual
+      const now = Date.now();
+      const dt = Math.min(5, (now - s.mining.lastTick) / 1000);
+      const pending = s.mining.pending + s.mining.rate * s.mining.gpus * dt;
+      // order book churn — occasional new listing
+      let orderBook = s.orderBook;
+      let trades = s.trades;
+      if (Math.random() < 0.25) {
+        const users = ['@kamila', '@IL76pd', '@vlad_b', '@anon_maple', '@Dan9kov', '@eva_k', '@unlucky_POvelitel'];
+        const side = Math.random() > 0.5 ? 'buy' : 'sell';
+        const cbc = Math.round(rnd(2, 60));
+        const mpl = Math.round(cbc * p + rnd(-20, 20));
+        orderBook = [{
+          id: 'o' + now,
+          side, user: choice(users), cbc, mpl,
+          ago: 'just now',
+        }, ...orderBook].slice(0, 10);
+      }
+      if (Math.random() < 0.15) {
+        const users = ['@kamila', '@IL76pd', '@vlad_b', '@anon_maple'];
+        const cbc = Math.round(rnd(2, 30));
+        trades = [{
+          id: 't' + now, buyer: choice(users), seller: choice(users), cbc,
+          mpl: Math.round(cbc * p),
+          ago: 'now',
+        }, ...trades].slice(0, 12);
+      }
+      // auction countdown
+      const auction = s.auction.map(a => ({ ...a, ends: Math.max(0, a.ends - 1) }));
+      return {
+        ...s, price: p, prevPrice: s.price, history: hist, circuit,
+        mining: { ...s.mining, pending, lastTick: now },
+        orderBook, trades, auction,
+      };
+    });
+  }, 1000);
+};
+
+Object.assign(window, { useStore, getState, setState, actions, startTicker, nf, rnd, clamp, initialState });
+
+</script>
+<script type="text/babel">
+/* Liquid-glass primitives for CobyaCoin web. Exposes components globally. */
+
+const Glass = ({ tier = 'regular', tint, style, className = '', children, onClick, ...rest }) => {
+  const fills = {
+    thin: 'rgb(18 21 32 / .40)',
+    regular: 'rgb(18 21 32 / .55)',
+    thick: 'rgb(12 14 20 / .70)'
+  };
+  const blurs = {
+    thin: 'saturate(160%) blur(20px)',
+    regular: 'saturate(180%) blur(30px)',
+    thick: 'saturate(200%) blur(40px)'
+  };
+  const tints = {
+    amber: 'rgb(245 184 65 / .18)',
+    maple: 'rgb(217 67 42 / .22)',
+    reserve: 'rgb(58 141 255 / .18)',
+    success: 'rgb(52 199 89 / .18)',
+    danger: 'rgb(255 69 58 / .18)',
+    violet: 'rgb(138 47 255 / .22)'
+  };
+  const bg = tint
+    ? `linear-gradient(${tints[tint]}, ${tints[tint]}), ${fills[tier]}`
+    : fills[tier];
+  return (
+    <div
+      onClick={onClick}
+      className={className}
+      style={{
+        background: bg,
+        backdropFilter: blurs[tier],
+        WebkitBackdropFilter: blurs[tier],
+        boxShadow:
+          'inset 0 0 0 1px rgb(255 255 255 / .12), inset 0 1px 0 rgb(255 255 255 / .22), 0 8px 24px rgb(0 0 0 / .28)',
+        borderRadius: 22,
+        ...style
+      }}
+      {...rest}
+    >
+      {children}
+    </div>
+  );
+};
+
+const Btn = ({ tone = 'amber', size = 'md', children, onClick, style, disabled }) => {
+  const tones = {
+    amber: { bg: 'linear-gradient(180deg,#FFD78C,#F5B841)', color: '#1A0F00', glow: 'rgb(245 184 65 / .45)' },
+    maple: { bg: 'linear-gradient(180deg,#E8674C,#C23A22)', color: '#fff', glow: 'rgb(217 67 42 / .45)' },
+    reserve: { bg: 'linear-gradient(180deg,#6FA9FF,#3A8DFF)', color: '#fff', glow: 'rgb(58 141 255 / .45)' },
+    success: { bg: 'linear-gradient(180deg,#6EE59E,#34C759)', color: '#042b12', glow: 'rgb(52 199 89 / .45)' },
+    danger: { bg: 'linear-gradient(180deg,#FF7A73,#FF453A)', color: '#fff', glow: 'rgb(255 69 58 / .45)' },
+    glass: { bg: 'rgb(18 21 32 / .55)', color: '#fff', glow: 'transparent' },
+    ghost: { bg: 'transparent', color: '#C8CEDB', glow: 'transparent' }
+  };
+  const sizes = {
+    sm: { p: '8px 12px', fs: 13, r: 10 },
+    md: { p: '12px 18px', fs: 15, r: 14 },
+    lg: { p: '16px 22px', fs: 17, r: 16 }
+  };
+  const t = tones[tone];
+  const sz = sizes[size];
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        background: t.bg,
+        color: t.color,
+        border: tone === 'ghost' ? '1px solid rgb(255 255 255 / .14)' : 'none',
+        borderRadius: sz.r,
+        padding: sz.p,
+        fontFamily: 'SF Pro Display, Geist, -apple-system, sans-serif',
+        fontSize: sz.fs,
+        fontWeight: 700,
+        letterSpacing: '-.005em',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? .5 : 1,
+        boxShadow:
+          tone === 'glass'
+            ? 'inset 0 0 0 1px #ffffff24, inset 0 1px 0 #ffffff38, 0 8px 24px rgb(0 0 0 / .25)'
+            : tone === 'ghost' ? 'none'
+            : `inset 0 1px 0 rgb(255 255 255 / .55), 0 10px 24px ${t.glow}`,
+        backdropFilter: tone === 'glass' ? 'saturate(180%) blur(30px)' : 'none',
+        WebkitBackdropFilter: tone === 'glass' ? 'saturate(180%) blur(30px)' : 'none',
+        transition: 'transform 120ms cubic-bezier(.22,1,.36,1), box-shadow 220ms',
+        ...style
+      }}
+      onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(.97)')}
+      onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+    >
+      {children}
+    </button>
+  );
+};
+
+const Chip = ({ tint = 'neutral', children, style }) => {
+  const tints = {
+    neutral: { bg: 'rgb(255 255 255 / .10)', color: '#fff' },
+    amber: { bg: 'rgb(245 184 65 / .22)', color: '#FFE3A6' },
+    maple: { bg: 'rgb(217 67 42 / .22)', color: '#FFC4B3' },
+    reserve: { bg: 'rgb(58 141 255 / .22)', color: '#BFD7FF' },
+    success: { bg: 'rgb(52 199 89 / .22)', color: '#9CEBB3' },
+    danger: { bg: 'rgb(255 69 58 / .22)', color: '#FFB3AE' },
+    violet: { bg: 'rgb(138 47 255 / .22)', color: '#D4B8FF' }
+  };
+  const t = tints[tint];
+  return (
+    <span
+      style={{
+        padding: '4px 10px',
+        borderRadius: 999,
+        background: t.bg,
+        color: t.color,
+        fontSize: 12,
+        lineHeight: '16px',
+        fontWeight: 600,
+        fontFamily: 'SF Pro Text, Geist, sans-serif',
+        whiteSpace: 'nowrap',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        ...style
+      }}
+    >
+      {children}
+    </span>
+  );
+};
+
+// area sparkline / line chart
+const Chart = ({ data, color = '#F5B841', width = 800, height = 220, fill = true, showAxis = false }) => {
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const span = Math.max(1, max - min);
+  const padTop = 16, padBot = showAxis ? 28 : 8;
+  const pts = data.map((v, i) => [
+    (i / (data.length - 1)) * width,
+    height - ((v - min) / span) * (height - padTop - padBot) - padBot
+  ]);
+  const d = pts.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(' ');
+  const area = `${d} L${width},${height} L0,${height} Z`;
+  const id = `chart-${color.replace('#', '')}`;
+  const last = pts[pts.length - 1];
+  return (
+    <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ overflow: 'visible', display: 'block' }}>
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity=".45" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {/* grid */}
+      {showAxis && [0.25, 0.5, 0.75].map((y, i) => (
+        <line key={i} x1="0" y1={padTop + (height - padTop - padBot) * y} x2={width} y2={padTop + (height - padTop - padBot) * y}
+          stroke="rgb(255 255 255 / .06)" strokeDasharray="2 4" />
+      ))}
+      {fill && <path d={area} fill={`url(#${id})`} />}
+      <path d={d} stroke={color} strokeWidth="1.75" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+      {/* last-price dot */}
+      <circle cx={last[0]} cy={last[1]} r="4" fill={color} />
+      <circle cx={last[0]} cy={last[1]} r="9" fill={color} opacity="0.2">
+        <animate attributeName="r" values="4;14;4" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values=".4;0;.4" dur="2s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+  );
+};
+
+// Animated value — counts up / flashes on change
+const Ticker = ({ value, decimals = 2, prefix = '', suffix = '', style, flashOnChange = true, size = 34 }) => {
+  const prev = useRef(value);
+  const [flash, setFlash] = useState(null);
+  useEffect(() => {
+    if (flashOnChange && prev.current !== value) {
+      setFlash(value > prev.current ? 'up' : 'down');
+      const t = setTimeout(() => setFlash(null), 600);
+      prev.current = value;
+      return () => clearTimeout(t);
+    }
+    prev.current = value;
+  }, [value, flashOnChange]);
+  const c = flash === 'up' ? '#6EE59E' : flash === 'down' ? '#FFB3AE' : '#fff';
+  return (
+    <span style={{
+      fontFamily: 'JetBrains Mono, SF Mono, monospace',
+      fontWeight: 700,
+      fontSize: size,
+      letterSpacing: '-.02em',
+      color: c,
+      transition: 'color 600ms cubic-bezier(.22,1,.36,1)',
+      fontVariantNumeric: 'tabular-nums',
+      ...style
+    }}>
+      {prefix}{nf(value, decimals)}{suffix}
+    </span>
+  );
+};
+
+const Row = ({ leading, title, subtitle, trailing, onClick, style }) => (
+  <div
+    onClick={onClick}
+    style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '12px 16px', cursor: onClick ? 'pointer' : 'default',
+      borderRadius: 14, transition: 'background 220ms',
+      ...style
+    }}
+    onMouseEnter={(e) => onClick && (e.currentTarget.style.background = 'rgb(255 255 255 / .04)')}
+    onMouseLeave={(e) => onClick && (e.currentTarget.style.background = 'transparent')}
+  >
+    {leading !== undefined && <div style={{ flexShrink: 0 }}>{leading}</div>}
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{
+        color: '#fff', fontSize: 15, lineHeight: '20px', fontWeight: 600,
+        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+      }}>{title}</div>
+      {subtitle && (
+        <div style={{ color: '#9AA2B4', fontSize: 13, lineHeight: '17px', marginTop: 1 }}>
+          {subtitle}
+        </div>
+      )}
+    </div>
+    {trailing !== undefined && <div style={{ flexShrink: 0, textAlign: 'right' }}>{trailing}</div>}
+  </div>
+);
+
+// avatar via deterministic gradient based on handle
+const Avatar = ({ handle, size = 32 }) => {
+  const seed = [...handle].reduce((a, c) => a + c.charCodeAt(0), 0);
+  const h1 = (seed * 37) % 360;
+  const h2 = (h1 + 40) % 360;
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: 999,
+      background: `linear-gradient(135deg, hsl(${h1} 70% 60%), hsl(${h2} 70% 45%))`,
+      boxShadow: 'inset 0 1px 0 rgb(255 255 255 / .3)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      color: '#fff', fontSize: size * 0.38, fontWeight: 700, flexShrink: 0
+    }}>
+      {handle.replace('@', '').charAt(0).toUpperCase()}
+    </div>
+  );
+};
+
+// Coin mark (CBC) — animated
+const CoinMark = ({ size = 40, spin = false }) => (
+  <div style={{
+    width: size, height: size, borderRadius: 999,
+    background: 'radial-gradient(circle at 30% 30%, #FFE3A6, #F5B841 55%, #D39110 100%)',
+    boxShadow: 'inset 0 2px 4px rgb(255 255 255 / .5), inset 0 -4px 8px rgb(0 0 0 / .3), 0 6px 16px rgb(245 184 65 / .4)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: '#1A0F00', fontSize: size * 0.5, fontWeight: 900,
+    fontFamily: 'SF Pro Display, Geist, serif',
+    animation: spin ? 'coinSpin 12s linear infinite' : 'none',
+    flexShrink: 0
+  }}>
+    C
+  </div>
+);
+
+const MapleMark = ({ size = 28 }) => (
+  <div style={{
+    width: size, height: size, borderRadius: 999,
+    background: 'radial-gradient(circle at 30% 30%, #FFC4B3, #D9432A 60%, #8B2515 100%)',
+    boxShadow: 'inset 0 2px 4px rgb(255 255 255 / .4), 0 4px 12px rgb(217 67 42 / .4)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: '#fff', fontSize: size * 0.55, flexShrink: 0
+  }}>🍁</div>
+);
+
+// Toast
+const useToasts = () => {
+  const [toasts, setToasts] = useState([]);
+  const show = (t) => {
+    const id = Date.now() + Math.random();
+    setToasts((x) => [...x, { id, ...t }]);
+    setTimeout(() => setToasts((x) => x.filter((y) => y.id !== id)), 3200);
+  };
+  return { toasts, show };
+};
+
+const ToastStack = ({ toasts }) => (
+  <div style={{
+    position: 'fixed', bottom: 24, right: 24, zIndex: 100,
+    display: 'flex', flexDirection: 'column', gap: 10, pointerEvents: 'none'
+  }}>
+    {toasts.map((t) => (
+      <div key={t.id} style={{
+        background: 'rgb(12 14 20 / .82)',
+        backdropFilter: 'saturate(200%) blur(40px)',
+        WebkitBackdropFilter: 'saturate(200%) blur(40px)',
+        boxShadow: 'inset 0 0 0 1px rgb(255 255 255 / .14), inset 0 1px 0 rgb(255 255 255 / .28), 0 20px 48px rgb(0 0 0 / .5)',
+        borderRadius: 14, padding: '12px 16px',
+        color: '#fff', fontSize: 14, fontWeight: 500,
+        minWidth: 240, maxWidth: 340,
+        display: 'flex', alignItems: 'center', gap: 10,
+        animation: 'toastIn .35s cubic-bezier(.22,1,.36,1)'
+      }}>
+        {t.emoji && <span style={{ fontSize: 18 }}>{t.emoji}</span>}
+        <span style={{ flex: 1 }}>{t.text}</span>
+      </div>
+    ))}
+  </div>
+);
+
+// RarityBadge for NFT auction
+const RarityBadge = ({ rarity }) => {
+  const rarities = {
+    common: { label: 'Common', color: '#9AA2B4', tint: 'neutral' },
+    rare: { label: 'Rare', color: '#3A8DFF', tint: 'reserve' },
+    legendary: { label: 'Legendary', color: '#F5B841', tint: 'amber' },
+    mythic: { label: 'Mythic', color: '#D4B8FF', tint: 'violet' }
+  };
+  const r = rarities[rarity];
+  return <Chip tint={r.tint}>★ {r.label}</Chip>;
+};
+
+// Tag cards/items with magnetic hover lift
+const Lift = ({ children, amount = 4, style }) => {
+  const ref = useRef();
+  return (
+    <div ref={ref} style={{ transition: 'transform 300ms cubic-bezier(.22,1,.36,1)', ...style }}
+      onMouseEnter={(e) => (e.currentTarget.style.transform = `translateY(-${amount}px)`)}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Countdown formatter
+const fmtTime = (s) => {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}ч ${m}м`;
+  return `${m}:${String(sec).padStart(2, '0')}`;
+};
+
+Object.assign(window, {
+  Glass, Btn, Chip, Chart, Ticker, Row, Avatar, CoinMark, MapleMark,
+  useToasts, ToastStack, RarityBadge, Lift, fmtTime
+});
+
+</script>
+<script type="text/babel">
+/* Screens for CobyaCoin web — Dashboard, Exchange, Mining, Auction, Casino, Leaderboard, Profile */
+
+// ====================== DASHBOARD ======================
+const Dashboard = ({ toast, goto }) => {
+  const s = useStore();
+  const pct = ((s.price - s.prevPrice) / s.prevPrice * 100);
+  const up = s.price >= s.history[0];
+  const dayPct = ((s.price - s.history[0]) / s.history[0] * 100);
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 20 }}>
+      {/* LEFT: price + chart + market depth */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <Glass tier="thick" tint="amber" style={{ padding: 28, borderRadius: 28 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, marginBottom: 14, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+              <CoinMark size={30} spin />
+              <span style={{ fontSize: 12, color: '#FFE3A6', textTransform: 'uppercase', letterSpacing: '.12em', fontWeight: 700, whiteSpace: 'nowrap' }}>CBC / MPL · Курс Центробанка</span>
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+              <Btn tone="amber" onClick={() => goto('trade')}>↓ Купить CBC</Btn>
+              <Btn tone="maple" onClick={() => goto('trade')}>↑ Продать</Btn>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap' }}>
+            <Ticker value={s.price} decimals={2} size={68} />
+            <span style={{ color: '#FFE3A6', fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 600 }}>MPL</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
+            <Chip tint={up ? 'success' : 'danger'}>{up ? '▲' : '▼'} {nf(Math.abs(dayPct), 2)}% · 24ч</Chip>
+            <span style={{ fontSize: 13, color: '#C8CEDB' }}>Тик: {pct >= 0 ? '+' : ''}{nf(pct, 3)}%</span>
+            {s.circuit && <Chip tint="danger">🔒 Планка</Chip>}
+          </div>
+          <div style={{ margin: '16px -28px -28px', padding: '0 4px' }}>
+            <Chart data={s.history} color="#F5B841" height={220} showAxis />
+          </div>
+        </Glass>
+
+        {/* Market depth / live book */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <Glass style={{ padding: 18 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <span style={{ fontSize: 17, fontWeight: 700 }}>Биржа · покупка</span>
+              <Chip tint="success">{s.orderBook.filter(o => o.side === 'buy').length}</Chip>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {s.orderBook.filter(o => o.side === 'buy').slice(0, 5).map((o, i) => (
+                <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 10,
+                  background: `linear-gradient(90deg, rgb(52 199 89 / ${.02 + (5 - i) * 0.03}) 0%, transparent 100%)` }}>
+                  <Avatar handle={o.user} size={24} />
+                  <span style={{ fontSize: 13, color: '#fff', flex: 1 }}>{o.user}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#9CEBB3' }}>{o.cbc} CBC</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#C8CEDB', width: 90, textAlign: 'right' }}>{nf(o.mpl)} MPL</span>
+                </div>
+              ))}
+            </div>
+          </Glass>
+          <Glass style={{ padding: 18 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <span style={{ fontSize: 17, fontWeight: 700 }}>Биржа · продажа</span>
+              <Chip tint="danger">{s.orderBook.filter(o => o.side === 'sell').length}</Chip>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {s.orderBook.filter(o => o.side === 'sell').slice(0, 5).map((o, i) => (
+                <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 10,
+                  background: `linear-gradient(90deg, rgb(255 69 58 / ${.02 + (5 - i) * 0.03}) 0%, transparent 100%)` }}>
+                  <Avatar handle={o.user} size={24} />
+                  <span style={{ fontSize: 13, color: '#fff', flex: 1 }}>{o.user}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#FFB3AE' }}>{o.cbc} CBC</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#C8CEDB', width: 90, textAlign: 'right' }}>{nf(o.mpl)} MPL</span>
+                </div>
+              ))}
+            </div>
+          </Glass>
+        </div>
+      </div>
+
+      {/* RIGHT: portfolio + feed */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <Glass tier="thick" style={{ padding: 22, borderRadius: 24 }}>
+          <div style={{ fontSize: 12, color: '#9AA2B4', letterSpacing: '.08em', textTransform: 'uppercase', fontWeight: 700 }}>Портфель</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 8 }}>
+            <Ticker value={s.user.mpl + s.user.cbc * s.price} decimals={0} size={36} flashOnChange={false} />
+            <span style={{ color: '#D9432A', fontFamily: 'JetBrains Mono, monospace', fontSize: 16, fontWeight: 600 }}>MPL</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 16 }}>
+            <div style={{ padding: 14, borderRadius: 14, background: 'rgb(245 184 65 / .12)', boxShadow: 'inset 0 0 0 1px rgb(245 184 65 / .22)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <CoinMark size={18} /><span style={{ fontSize: 11, color: '#FFE3A6', fontWeight: 700, letterSpacing: '.08em' }}>CBC</span>
+              </div>
+              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 20, fontWeight: 700, marginTop: 6 }}>{nf(s.user.cbc)}</div>
+              <div style={{ fontSize: 11, color: '#C8CEDB', marginTop: 2 }}>≈ {nf(s.user.cbc * s.price)} MPL</div>
+            </div>
+            <div style={{ padding: 14, borderRadius: 14, background: 'rgb(217 67 42 / .12)', boxShadow: 'inset 0 0 0 1px rgb(217 67 42 / .22)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <MapleMark size={18} /><span style={{ fontSize: 11, color: '#FFC4B3', fontWeight: 700, letterSpacing: '.08em' }}>MPL</span>
+              </div>
+              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 20, fontWeight: 700, marginTop: 6 }}>{nf(s.user.mpl)}</div>
+              <div style={{ fontSize: 11, color: '#C8CEDB', marginTop: 2 }}>Кленовые листья</div>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginTop: 14 }}>
+            {[
+              { icon: '↓', label: 'Купить', to: 'trade', tone: 'amber' },
+              { icon: '↑', label: 'Продать', to: 'trade', tone: 'maple' },
+              { icon: '⛏', label: 'Майнинг', to: 'mine', tone: 'glass' },
+              { icon: '🎰', label: 'Казино', to: 'play', tone: 'glass' }
+            ].map(a => (
+              <Btn key={a.label} tone={a.tone} size="sm" onClick={() => goto(a.to)} style={{ padding: '10px 4px', fontSize: 12 }}>
+                <div style={{ fontSize: 18, marginBottom: 2 }}>{a.icon}</div>
+                {a.label}
+              </Btn>
+            ))}
+          </div>
+        </Glass>
+
+        <Glass tier="regular" tint="reserve" style={{ padding: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(180deg,#6FA9FF,#3A8DFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🏛</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Центробанк активен</div>
+              <div style={{ fontSize: 12, color: '#BFD7FF', marginTop: 2 }}>Ликвидность {nf(s.reserve.liquidityMpl / 1000, 1)}k MPL · {nf(s.reserve.liquidityCbc)} CBC</div>
+            </div>
+            <div style={{ width: 10, height: 10, borderRadius: 999, background: '#34C759', boxShadow: '0 0 12px #34C759' }} />
+          </div>
+        </Glass>
+
+        {/* Live feed */}
+        <Glass style={{ padding: 4, minHeight: 220, maxHeight: 320, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '12px 16px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 15, fontWeight: 700 }}>Лента событий</span>
+            <Chip tint="amber">live</Chip>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 4px 8px' }}>
+            {s.feed.slice(0, 10).map(f => (
+              <Row key={f.id}
+                leading={<span style={{ fontSize: 20 }}>{f.emoji}</span>}
+                title={<span style={{ fontSize: 13, fontWeight: 500 }}>{f.text}</span>}
+                subtitle={<span style={{ fontSize: 11 }}>{f.ago}</span>}
+              />
+            ))}
+          </div>
+        </Glass>
+      </div>
+    </div>
+  );
+};
+
+// ====================== TRADE / EXCHANGE ======================
+const Exchange = ({ toast }) => {
+  const s = useStore();
+  const [side, setSide] = useState('buy');
+  const [amount, setAmount] = useState('12');
+  const [price, setPrice] = useState(s.price.toFixed(2));
+  const [tab, setTab] = useState('book'); // book | trades
+  const total = Number(amount || 0) * Number(price || 0);
+
+  const place = () => {
+    const r = actions.placeOrder({ side, cbc: Number(amount), mpl: total });
+    if (r.ok) toast({ emoji: '✅', text: `Ордер на ${side === 'buy' ? 'покупку' : 'продажу'} исполнен.` });
+    else toast({ emoji: '❌', text: r.err });
+  };
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 20 }}>
+      {/* LEFT: chart + order form */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Glass tier="thick" style={{ padding: 22, borderRadius: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <CoinMark size={30} />
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 700 }}>CBC / MPL</div>
+                <div style={{ fontSize: 12, color: '#9AA2B4' }}>Торговая пара Центробанка</div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <Ticker value={s.price} decimals={2} size={30} />
+              <div style={{ fontSize: 12, color: '#9AA2B4' }}>MPL за 1 CBC</div>
+            </div>
+          </div>
+          <div style={{ margin: '10px -22px -22px' }}>
+            <Chart data={s.history} color="#F5B841" height={200} showAxis />
+          </div>
+        </Glass>
+
+        <Glass style={{ padding: 20 }}>
+          {/* Buy/Sell toggle */}
+          <div style={{ display: 'flex', gap: 6, padding: 4, borderRadius: 14, background: 'rgb(0 0 0 / .3)', marginBottom: 16 }}>
+            {['buy', 'sell'].map(sd => (
+              <button key={sd} onClick={() => setSide(sd)}
+                style={{
+                  flex: 1, padding: '10px 0', borderRadius: 10, border: 'none',
+                  background: side === sd ? (sd === 'buy' ? 'linear-gradient(180deg,#6EE59E,#34C759)' : 'linear-gradient(180deg,#FF7A73,#FF453A)') : 'transparent',
+                  color: side === sd ? (sd === 'buy' ? '#042b12' : '#fff') : '#C8CEDB',
+                  fontWeight: 700, fontSize: 14, cursor: 'pointer', letterSpacing: '.04em', textTransform: 'uppercase',
+                  boxShadow: side === sd ? 'inset 0 1px 0 rgb(255 255 255 / .55)' : 'none',
+                  transition: 'all 220ms'
+                }}>{sd === 'buy' ? 'Купить CBC' : 'Продать CBC'}</button>
+            ))}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ padding: 14, borderRadius: 14, background: 'rgb(0 0 0 / .28)', boxShadow: 'inset 0 0 0 1px rgb(255 255 255 / .06)' }}>
+              <div style={{ fontSize: 11, color: '#9AA2B4', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '.08em' }}>Объём</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 4 }}>
+                <input value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ''))} inputMode="decimal"
+                  style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontFamily: 'JetBrains Mono, monospace', fontSize: 26, fontWeight: 700 }} />
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: '#F5B841', fontSize: 14 }}>CBC</span>
+              </div>
+            </div>
+            <div style={{ padding: 14, borderRadius: 14, background: 'rgb(0 0 0 / .28)', boxShadow: 'inset 0 0 0 1px rgb(255 255 255 / .06)' }}>
+              <div style={{ fontSize: 11, color: '#9AA2B4', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '.08em' }}>Цена</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 4 }}>
+                <input value={price} onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ''))} inputMode="decimal"
+                  style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontFamily: 'JetBrains Mono, monospace', fontSize: 26, fontWeight: 700 }} />
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: '#D9432A', fontSize: 14 }}>MPL</span>
+              </div>
+            </div>
+          </div>
+
+          {/* % quick fill */}
+          <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>
+            {[25, 50, 75, 100].map(p => (
+              <button key={p} onClick={() => {
+                const avail = side === 'buy' ? s.user.mpl / Number(price || s.price) : s.user.cbc;
+                setAmount(String(Math.floor(avail * p / 100)));
+              }} style={{
+                flex: 1, padding: '8px 0', borderRadius: 10,
+                border: '1px solid rgb(255 255 255 / .1)', background: 'rgb(255 255 255 / .04)',
+                color: '#C8CEDB', fontSize: 13, fontWeight: 600, cursor: 'pointer'
+              }}>{p}%</button>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 16, padding: 14, borderRadius: 12, background: 'rgb(0 0 0 / .3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <span style={{ fontSize: 13, color: '#9AA2B4' }}>Итого</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700 }}>
+                {nf(total)} <span style={{ fontSize: 13, color: '#D9432A' }}>MPL</span>
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+              <span style={{ fontSize: 12, color: '#9AA2B4' }}>Комиссия Центробанка</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12 }}>10%</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+              <span style={{ fontSize: 12, color: '#9AA2B4' }}>Доступно</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12 }}>
+                {side === 'buy' ? `${nf(s.user.mpl)} MPL` : `${nf(s.user.cbc)} CBC`}
+              </span>
+            </div>
+          </div>
+
+          <Btn tone={side === 'buy' ? 'success' : 'danger'} size="lg" style={{ width: '100%', marginTop: 14 }} onClick={place}>
+            {side === 'buy' ? '↓ Купить' : '↑ Продать'} {amount || 0} CBC
+          </Btn>
+        </Glass>
+      </div>
+
+      {/* RIGHT: book / trades */}
+      <Glass style={{ padding: 4, display: 'flex', flexDirection: 'column', maxHeight: 760 }}>
+        <div style={{ padding: '14px 16px 8px', display: 'flex', gap: 6 }}>
+          {[['book', 'Стакан'], ['trades', 'Сделки']].map(([k, l]) => (
+            <button key={k} onClick={() => setTab(k)} style={{
+              padding: '6px 12px', borderRadius: 10, border: 'none',
+              background: tab === k ? 'rgb(245 184 65 / .22)' : 'transparent',
+              color: tab === k ? '#FFE3A6' : '#9AA2B4',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer'
+            }}>{l}</button>
+          ))}
+        </div>
+        <div style={{ overflowY: 'auto', flex: 1, padding: '0 4px 8px' }}>
+          {tab === 'book' && s.orderBook.map(o => (
+            <Row key={o.id}
+              leading={<Avatar handle={o.user} size={28} />}
+              title={<span style={{ fontSize: 13 }}>{o.user}</span>}
+              subtitle={<span style={{ fontSize: 11 }}>{o.side === 'buy' ? '🟢 покупка' : '🔴 продажа'} · {o.ago}</span>}
+              trailing={<div>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, fontSize: 13, color: o.side === 'buy' ? '#9CEBB3' : '#FFB3AE' }}>{o.cbc} CBC</div>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#C8CEDB' }}>{nf(o.mpl)} MPL</div>
+              </div>}
+            />
+          ))}
+          {tab === 'trades' && s.trades.map(t => (
+            <Row key={t.id}
+              leading={<span style={{ fontSize: 18 }}>⇄</span>}
+              title={<span style={{ fontSize: 13 }}>{t.buyer} ← {t.seller}</span>}
+              subtitle={<span style={{ fontSize: 11 }}>{t.ago}</span>}
+              trailing={<div>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, fontSize: 13 }}>{t.cbc} CBC</div>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#C8CEDB' }}>{nf(t.mpl)} MPL</div>
+              </div>}
+            />
+          ))}
+        </div>
+      </Glass>
+    </div>
+  );
+};
+
+// ====================== MINING ======================
+const Mining = ({ toast }) => {
+  const s = useStore();
+  const dailyRate = s.mining.rate * s.mining.gpus * 86400;
+
+  const collect = () => {
+    const r = actions.collectMining();
+    if (r.ok) toast({ emoji: '💰', text: `+${r.gained.toFixed(2)} CBC собрано.` });
+  };
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* Hero — big mining rig */}
+        <Glass tier="thick" tint="amber" style={{ padding: 28, borderRadius: 28, position: 'relative', overflow: 'hidden' }}>
+          {/* Scrolling pattern */}
+          <div style={{
+            position: 'absolute', inset: 0, opacity: .18,
+            backgroundImage: 'repeating-linear-gradient(45deg, transparent 0 20px, rgb(245 184 65 / .6) 20px 22px)',
+            animation: 'slide 8s linear infinite'
+          }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, letterSpacing: '.12em', color: '#FFE3A6', textTransform: 'uppercase', fontWeight: 700 }}>Ферма · lvl {s.mining.level}</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 8 }}>
+              <Ticker value={s.mining.pending} decimals={3} size={60} flashOnChange={false} />
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#FFE3A6', fontSize: 20, fontWeight: 700 }}>CBC</span>
+              <span style={{ color: '#C8CEDB', fontSize: 13, marginLeft: 8 }}>ожидают сбора</span>
+            </div>
+            <div style={{ display: 'flex', gap: 14, marginTop: 8 }}>
+              <div><span style={{ fontSize: 11, color: '#9AA2B4', textTransform: 'uppercase', letterSpacing: '.08em' }}>GPU</span> <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700 }}>{s.mining.gpus} / {s.mining.maxGpus}</span></div>
+              <div><span style={{ fontSize: 11, color: '#9AA2B4', textTransform: 'uppercase', letterSpacing: '.08em' }}>Скорость</span> <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700 }}>{(s.mining.rate * s.mining.gpus * 3600).toFixed(2)} CBC/ч</span></div>
+              <div><span style={{ fontSize: 11, color: '#9AA2B4', textTransform: 'uppercase', letterSpacing: '.08em' }}>В день</span> <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700 }}>≈ {nf(dailyRate, 1)} CBC</span></div>
+            </div>
+            <Btn tone="amber" size="lg" style={{ marginTop: 16 }} onClick={collect} disabled={s.mining.pending < 0.001}>
+              💰 Собрать {s.mining.pending.toFixed(3)} CBC
+            </Btn>
+          </div>
+        </Glass>
+
+        {/* GPU grid */}
+        <Glass style={{ padding: 22 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <div>
+              <div style={{ fontSize: 17, fontWeight: 700 }}>Видеокарты</div>
+              <div style={{ fontSize: 12, color: '#9AA2B4', marginTop: 2 }}>Клик по слоту — подробности</div>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Btn tone="glass" size="sm" onClick={() => {
+                const r = actions.sellGpu();
+                if (r.ok) toast({ emoji: '✅', text: 'GPU продан · +180 MPL' });
+              }}>− Продать GPU</Btn>
+              <Btn tone="amber" size="sm" onClick={() => {
+                const r = actions.buyGpu();
+                if (r.ok) toast({ emoji: '⛏', text: 'GPU установлен.' });
+                else toast({ emoji: '❌', text: r.err });
+              }}>+ GPU · 320 MPL</Btn>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10,1fr)', gap: 8 }}>
+            {Array.from({ length: s.mining.maxGpus }).map((_, i) => {
+              const on = i < s.mining.gpus;
+              return (
+                <div key={i} style={{
+                  aspectRatio: '1 / 1', borderRadius: 10,
+                  background: on ? 'linear-gradient(180deg,#FFD78C,#F5B841)' : 'rgb(255 255 255 / .04)',
+                  boxShadow: on ? 'inset 0 1px 0 #ffffff90, 0 0 12px #F5B84166' : 'inset 0 0 0 1px rgb(255 255 255 / .06)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: on ? '#1A0F00' : '#505868', fontSize: 16,
+                  animation: on ? `gpuPulse ${2 + (i % 4) * 0.3}s ease-in-out infinite` : 'none',
+                  transition: 'all 320ms'
+                }}>
+                  {on ? '▣' : ''}
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ marginTop: 18, padding: 16, borderRadius: 16, background: 'rgb(0 0 0 / .3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Улучшить ферму до lvl {s.mining.level + 1}</div>
+              <div style={{ fontSize: 12, color: '#9AA2B4', marginTop: 2 }}>+10 слотов GPU, ×1.2 скорость</div>
+            </div>
+            <Btn tone="reserve" onClick={() => {
+              const r = actions.upgradeFarm();
+              if (r.ok) toast({ emoji: '🛠', text: `Ферма повышена.` });
+              else toast({ emoji: '❌', text: r.err });
+            }}>{nf(s.mining.level * 1000)} MPL</Btn>
+          </div>
+        </Glass>
+      </div>
+
+      {/* RIGHT */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <Glass style={{ padding: 18 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>⚡ Потенциал</div>
+          {[
+            ['Ставка CBC/с', (s.mining.rate * s.mining.gpus).toFixed(4)],
+            ['В час', (s.mining.rate * s.mining.gpus * 3600).toFixed(2)],
+            ['В сутки', dailyRate.toFixed(1)],
+            ['В неделю', (dailyRate * 7).toFixed(0)],
+            ['≈ MPL/день', nf(dailyRate * s.price, 0)]
+          ].map(([k, v]) => (
+            <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgb(255 255 255 / .06)' }}>
+              <span style={{ fontSize: 13, color: '#9AA2B4' }}>{k}</span>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, fontSize: 13 }}>{v}</span>
+            </div>
+          ))}
+        </Glass>
+
+        <Glass tint="violet" style={{ padding: 18 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>🎁 Ежедневный бонус</div>
+          <div style={{ fontSize: 12, color: '#D4B8FF', marginBottom: 12 }}>Забирай каждые 24ч. Стрик: 6 дней.</div>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
+            {[1, 2, 3, 4, 5, 6, 7].map(d => (
+              <div key={d} style={{
+                flex: 1, aspectRatio: '1', borderRadius: 10,
+                background: d <= 6 ? 'linear-gradient(180deg,#D4B8FF,#8A2FFF)' : 'rgb(255 255 255 / .06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 11, fontWeight: 700,
+                color: d <= 6 ? '#0a0016' : '#9AA2B4',
+                boxShadow: d <= 6 ? 'inset 0 1px 0 rgb(255 255 255 / .4)' : 'none'
+              }}>{d}</div>
+            ))}
+          </div>
+          <Btn tone="glass" style={{ width: '100%' }} onClick={() => toast({ emoji: '🎁', text: 'Бонус заберёшь завтра.' })}>Забрано сегодня</Btn>
+        </Glass>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { Dashboard, Exchange, Mining });
+
+</script>
+<script type="text/babel">
+/* Auction, Casino, Leaderboard, Profile screens */
+
+// ====================== AUCTION ======================
+const Auction = ({ toast }) => {
+  const s = useStore();
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18 }}>
+        <div>
+          <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-.02em' }}>Аукцион</h1>
+          <p style={{ color: '#9AA2B4', marginTop: 4 }}>NFT-лоты от игроков. Ставки идут в MPL, минимальный шаг +500.</p>
+        </div>
+        <Btn tone="glass">+ Выставить лот</Btn>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px,1fr))', gap: 16 }}>
+        {s.auction.map(a => {
+          const tints = { common: 'neutral', rare: 'reserve', legendary: 'amber', mythic: 'violet' };
+          const colors = { common: '#505868', rare: '#3A8DFF', legendary: '#F5B841', mythic: '#8A2FFF' };
+          return (
+            <Lift key={a.id}>
+              <Glass tint={tints[a.rarity]} style={{ padding: 0, overflow: 'hidden' }}>
+                <div style={{
+                  height: 180,
+                  background: `radial-gradient(circle at 30% 30%, ${colors[a.rarity]}44, transparent 70%), linear-gradient(135deg, ${colors[a.rarity]}22, rgb(0 0 0 / .4))`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  position: 'relative', borderBottom: '1px solid rgb(255 255 255 / .06)'
+                }}>
+                  <div style={{ fontSize: 68, filter: `drop-shadow(0 8px 20px ${colors[a.rarity]}88)` }}>
+                    {a.rarity === 'mythic' ? '💠' : a.rarity === 'legendary' ? '🏆' : a.rarity === 'rare' ? '🎴' : '📦'}
+                  </div>
+                  <div style={{ position: 'absolute', top: 12, left: 12 }}><RarityBadge rarity={a.rarity} /></div>
+                  <div style={{ position: 'absolute', top: 12, right: 12 }}><Chip tint="neutral">⏱ {fmtTime(a.ends)}</Chip></div>
+                </div>
+                <div style={{ padding: 16 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700 }}>{a.title}</div>
+                  <div style={{ fontSize: 12, color: '#9AA2B4', marginTop: 2 }}>Лидер: {a.by}</div>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 11, color: '#9AA2B4', textTransform: 'uppercase', letterSpacing: '.08em', fontWeight: 700 }}>Текущая ставка</div>
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700 }}>{nf(a.bid)} <span style={{ fontSize: 12, color: '#D9432A' }}>MPL</span></div>
+                    </div>
+                    <Btn tone="amber" size="sm" onClick={() => {
+                      actions.bidAuction(a.id);
+                      toast({ emoji: '📢', text: `Ставка +500 MPL — ${a.title}.` });
+                    }}>+500</Btn>
+                  </div>
+                </div>
+              </Glass>
+            </Lift>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ====================== CASINO ======================
+const Casino = ({ toast }) => {
+  const s = useStore();
+  const [bet, setBet] = useState(500);
+  const [color, setColor] = useState('red');
+  const segments = 13;
+  const segColors = ['red', 'black', 'red', 'black', 'red', 'black', 'red', 'black', 'red', 'black', 'red', 'black', 'green'];
+
+  const spin = () => {
+    const r = actions.spinRoulette(bet, color);
+    if (!r.ok) toast({ emoji: '❌', text: r.err || 'Уже крутится.' });
+  };
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Glass tier="thick" tint="maple" style={{ padding: 28, borderRadius: 28, textAlign: 'center' }}>
+          <div style={{ fontSize: 12, color: '#FFC4B3', textTransform: 'uppercase', letterSpacing: '.12em', fontWeight: 700 }}>Джекпот недели</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 10, marginTop: 6 }}>
+            <Ticker value={s.casino.jackpotMpl} decimals={0} size={56} flashOnChange={false} />
+            <span style={{ color: '#FFC4B3', fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700 }}>MPL</span>
+          </div>
+          <div style={{ fontSize: 13, color: '#C8CEDB', marginTop: 4 }}>Розыгрыш каждую пятницу · 24 участника в пуле</div>
+        </Glass>
+
+        {/* Roulette wheel */}
+        <Glass tier="thick" style={{ padding: 28, borderRadius: 28 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-.02em' }}>🎰 Рулетка</div>
+              <div style={{ fontSize: 13, color: '#9AA2B4', marginTop: 2 }}>красный/чёрный ×2 · зелёный ×14</div>
+            </div>
+            {s.casino.lastRoll && (
+              <Chip tint={s.casino.lastRoll.won ? 'success' : 'danger'}>
+                {s.casino.lastRoll.won ? `✅ +${nf(s.casino.lastRoll.payout)}` : `❌ ${s.casino.lastRoll.result}`} MPL
+              </Chip>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, position: 'relative' }}>
+            <div style={{ position: 'relative', width: 320, height: 320 }}>
+              {/* Pointer */}
+              <div style={{
+                position: 'absolute', top: -6, left: '50%', transform: 'translateX(-50%)',
+                width: 0, height: 0,
+                borderLeft: '10px solid transparent', borderRight: '10px solid transparent',
+                borderTop: '18px solid #FFD78C',
+                filter: 'drop-shadow(0 4px 8px rgb(245 184 65 / .6))',
+                zIndex: 3
+              }} />
+              <div style={{
+                width: 320, height: 320, borderRadius: '50%',
+                background: 'conic-gradient(' + segColors.map((c, i) => {
+                  const deg = 360 / segments;
+                  const bg = c === 'red' ? '#D9432A' : c === 'black' ? '#1A1E2A' : '#34C759';
+                  return `${bg} ${i * deg}deg ${(i + 1) * deg}deg`;
+                }).join(', ') + ')',
+                boxShadow: 'inset 0 0 0 6px rgb(245 184 65 / .8), inset 0 0 0 8px rgb(0 0 0 / .5), 0 20px 48px rgb(0 0 0 / .5), 0 0 60px rgb(245 184 65 / .3)',
+                transform: `rotate(${s.casino.wheelAngle}deg)`,
+                transition: s.casino.spinning ? 'transform 3s cubic-bezier(.17,.67,.2,1)' : 'none',
+                position: 'relative'
+              }}>
+                {/* Numbers */}
+                {segColors.map((c, i) => {
+                  const deg = (360 / segments) * i + (360 / segments) / 2;
+                  return (
+                    <div key={i} style={{
+                      position: 'absolute', top: '50%', left: '50%',
+                      transform: `rotate(${deg}deg) translateY(-120px) rotate(-${deg}deg)`,
+                      marginLeft: -10, marginTop: -10, width: 20, height: 20,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#fff', fontSize: 13, fontWeight: 700, fontFamily: 'JetBrains Mono, monospace'
+                    }}>{i === 12 ? '0' : i + 1}</div>
+                  );
+                })}
+              </div>
+              {/* Center */}
+              <div style={{
+                position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+                width: 80, height: 80, borderRadius: '50%',
+                background: 'radial-gradient(circle at 30% 30%, #FFE3A6, #F5B841 55%, #D39110)',
+                boxShadow: 'inset 0 2px 4px rgb(255 255 255 / .5), 0 8px 20px rgb(0 0 0 / .5)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 34, color: '#1A0F00', fontWeight: 900
+              }}>C</div>
+            </div>
+          </div>
+
+          {/* Color picker */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+            {[
+              { k: 'red', label: 'Красное', bg: '#D9432A', mult: '×2' },
+              { k: 'black', label: 'Чёрное', bg: '#1A1E2A', mult: '×2' },
+              { k: 'green', label: 'Зелёное', bg: '#34C759', mult: '×14' }
+            ].map(c => (
+              <button key={c.k} onClick={() => setColor(c.k)} disabled={s.casino.spinning}
+                style={{
+                  flex: 1, padding: '14px 0', borderRadius: 14,
+                  background: c.bg, color: '#fff',
+                  border: 'none', cursor: s.casino.spinning ? 'not-allowed' : 'pointer',
+                  boxShadow: color === c.k ? `inset 0 0 0 3px #FFD78C, 0 8px 24px ${c.bg}88` : 'inset 0 1px 0 rgb(255 255 255 / .2)',
+                  fontWeight: 700, transition: 'all 220ms'
+                }}>
+                <div style={{ fontSize: 14 }}>{c.label}</div>
+                <div style={{ fontSize: 11, opacity: .8 }}>{c.mult}</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Bet chips */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+            {[100, 500, 1000, 5000, 10000].map(v => (
+              <button key={v} onClick={() => setBet(v)}
+                style={{
+                  flex: 1, padding: '10px 0', borderRadius: 10,
+                  background: bet === v ? 'linear-gradient(180deg,#FFD78C,#F5B841)' : 'rgb(255 255 255 / .06)',
+                  color: bet === v ? '#1A0F00' : '#C8CEDB',
+                  border: 'none', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 700, fontFamily: 'JetBrains Mono, monospace',
+                  boxShadow: bet === v ? 'inset 0 1px 0 rgb(255 255 255 / .5)' : 'none'
+                }}>{nf(v)}</button>
+            ))}
+          </div>
+
+          <Btn tone="amber" size="lg" style={{ width: '100%' }} onClick={spin} disabled={s.casino.spinning || s.user.mpl < bet}>
+            {s.casino.spinning ? '🎲 Крутится...' : `Крутить за ${nf(bet)} MPL`}
+          </Btn>
+        </Glass>
+      </div>
+
+      {/* Right sidebar: jackpot list + mini games */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <Glass tier="regular" tint="amber" style={{ padding: 18 }}>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>💎 Подкидной / Coin-flip</div>
+          <div style={{ fontSize: 12, color: '#FFE3A6', marginTop: 2, marginBottom: 12 }}>50/50 · ×1.9</div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Btn tone="amber" size="sm" style={{ flex: 1 }} onClick={() => {
+              const won = Math.random() > 0.5;
+              const delta = won ? bet * 0.9 : -bet;
+              setState(st => ({ ...st, user: { ...st.user, mpl: st.user.mpl + delta } }));
+              toast({ emoji: won ? '✅' : '❌', text: won ? `+${nf(bet * 0.9)} MPL` : `−${nf(bet)} MPL` });
+            }}>Орёл</Btn>
+            <Btn tone="glass" size="sm" style={{ flex: 1 }} onClick={() => {
+              const won = Math.random() > 0.5;
+              const delta = won ? bet * 0.9 : -bet;
+              setState(st => ({ ...st, user: { ...st.user, mpl: st.user.mpl + delta } }));
+              toast({ emoji: won ? '✅' : '❌', text: won ? `+${nf(bet * 0.9)} MPL` : `−${nf(bet)} MPL` });
+            }}>Решка</Btn>
+          </div>
+        </Glass>
+
+        <Glass style={{ padding: 4, maxHeight: 320, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '12px 16px 8px', fontSize: 14, fontWeight: 700 }}>🏆 Hall of fame</div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {[
+              ['@IL76pd', '+124 000 MPL', '2м назад'],
+              ['@kamila', '+48 000 MPL', '15м'],
+              ['@vlad_b', '+12 500 MPL', '28м'],
+              ['@eva_k', '+8 200 MPL', '1ч'],
+              ['@anon_maple', '+4 100 MPL', '2ч']
+            ].map(([u, w, a]) => (
+              <Row key={u}
+                leading={<Avatar handle={u} size={26} />}
+                title={<span style={{ fontSize: 13 }}>{u}</span>}
+                subtitle={<span style={{ fontSize: 11 }}>{a}</span>}
+                trailing={<span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#9CEBB3', fontWeight: 600 }}>{w}</span>}
+              />
+            ))}
+          </div>
+        </Glass>
+      </div>
+    </div>
+  );
+};
+
+// ====================== LEADERBOARD ======================
+const Leaderboard = () => {
+  const s = useStore();
+  const [tab, setTab] = useState('cbc');
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18 }}>
+        <div>
+          <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-.02em' }}>Топ игроков</h1>
+          <p style={{ color: '#9AA2B4', marginTop: 4 }}>Лучшие по балансу, активности и удаче за последние 7 дней.</p>
+        </div>
+        <Glass style={{ padding: 4, borderRadius: 14 }}>
+          <div style={{ display: 'flex' }}>
+            {[['cbc', 'CBC'], ['mpl', 'MPL'], ['active', 'Активность']].map(([k, l]) => (
+              <button key={k} onClick={() => setTab(k)} style={{
+                padding: '8px 18px', borderRadius: 10, border: 'none',
+                background: tab === k ? 'linear-gradient(180deg,#FFD78C,#F5B841)' : 'transparent',
+                color: tab === k ? '#1A0F00' : '#C8CEDB',
+                fontWeight: 700, fontSize: 13, cursor: 'pointer'
+              }}>{l}</button>
+            ))}
+          </div>
+        </Glass>
+      </div>
+
+      {/* Top 3 podium */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.15fr 1fr', gap: 16, alignItems: 'end', marginBottom: 20 }}>
+        {[s.leaderboard[1], s.leaderboard[0], s.leaderboard[2]].map((p, i) => {
+          const rank = p.rank;
+          const tints = { 1: 'amber', 2: 'neutral', 3: 'maple' };
+          const heights = { 1: 180, 2: 150, 3: 130 };
+          return (
+            <Lift key={p.user}>
+              <Glass tint={tints[rank]} style={{ padding: 22, textAlign: 'center', height: heights[rank], display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontSize: 32, marginBottom: 4 }}>{rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉'}</div>
+                <Avatar handle={p.user} size={rank === 1 ? 56 : 44} />
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: -44 }}>
+                  <Avatar handle={p.user} size={rank === 1 ? 56 : 44} />
+                </div>
+                <div style={{ fontSize: rank === 1 ? 17 : 15, fontWeight: 700, marginTop: 8 }}>{p.user}</div>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: rank === 1 ? 20 : 16, marginTop: 4 }}>
+                  {nf(tab === 'mpl' ? p.mpl : p.cbc)} <span style={{ fontSize: 11, color: tab === 'mpl' ? '#FFC4B3' : '#FFE3A6' }}>{tab === 'mpl' ? 'MPL' : 'CBC'}</span>
+                </div>
+              </Glass>
+            </Lift>
+          );
+        })}
+      </div>
+
+      <Glass style={{ padding: 4 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '60px 1fr 140px 140px 90px', padding: '12px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.08em', color: '#9AA2B4', fontWeight: 700 }}>
+          <div>#</div><div>Игрок</div><div style={{ textAlign: 'right' }}>CBC</div><div style={{ textAlign: 'right' }}>MPL</div><div style={{ textAlign: 'right' }}>Тренд</div>
+        </div>
+        {s.leaderboard.map(p => (
+          <div key={p.user} style={{
+            display: 'grid', gridTemplateColumns: '60px 1fr 140px 140px 90px', alignItems: 'center',
+            padding: '12px 16px', borderTop: '1px solid rgb(255 255 255 / .05)',
+            background: p.user === s.user.handle ? 'rgb(245 184 65 / .08)' : 'transparent'
+          }}>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: p.rank <= 3 ? '#F5B841' : '#9AA2B4' }}>#{p.rank}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Avatar handle={p.user} size={32} />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{p.user}{p.user === s.user.handle && <Chip tint="amber" style={{ marginLeft: 8 }}>ты</Chip>}</div>
+                <div style={{ fontSize: 11, color: '#9AA2B4' }}>{Math.round(p.cbc / 1000)} сделок</div>
+              </div>
+            </div>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', textAlign: 'right', fontWeight: 600 }}>{nf(p.cbc)}</div>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', textAlign: 'right', fontWeight: 600, color: '#C8CEDB' }}>{nf(p.mpl)}</div>
+            <div style={{ textAlign: 'right' }}>
+              <Chip tint={Math.random() > 0.5 ? 'success' : 'danger'}>
+                {Math.random() > 0.5 ? '▲' : '▼'} {nf(Math.random() * 20, 1)}%
+              </Chip>
+            </div>
+          </div>
+        ))}
+      </Glass>
+    </div>
+  );
+};
+
+// ====================== PROFILE ======================
+const Profile = ({ toast }) => {
+  const s = useStore();
+  const [promo, setPromo] = useState('');
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Glass tier="thick" style={{ padding: 28, borderRadius: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <Avatar handle={s.user.handle} size={80} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-.02em' }}>{s.user.handle}</div>
+              <div style={{ fontSize: 13, color: '#9AA2B4', marginTop: 4 }}>В системе с {s.user.joined} · {nf(s.user.trades)} сделок</div>
+              <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                <Chip tint="amber">⭐ Trader</Chip>
+                <Chip tint="reserve">🏛 Reserve partner</Chip>
+                <Chip tint="violet">💎 Holder 1y</Chip>
+              </div>
+            </div>
+            <Btn tone="glass" size="sm">Изменить</Btn>
+          </div>
+        </Glass>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+          {[
+            { k: 'CBC баланс', v: nf(s.user.cbc), sub: `≈ ${nf(s.user.cbc * s.price)} MPL`, tint: 'amber' },
+            { k: 'MPL баланс', v: nf(s.user.mpl), sub: 'Доступно к выводу', tint: 'maple' },
+            { k: 'PnL 7д', v: '+12.4%', sub: '+58 420 MPL', tint: 'success' }
+          ].map(x => (
+            <Glass key={x.k} tint={x.tint} style={{ padding: 18 }}>
+              <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.08em', fontWeight: 700, color: '#C8CEDB' }}>{x.k}</div>
+              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 26, fontWeight: 700, marginTop: 6 }}>{x.v}</div>
+              <div style={{ fontSize: 12, color: '#C8CEDB', marginTop: 2 }}>{x.sub}</div>
+            </Glass>
+          ))}
+        </div>
+
+        <Glass style={{ padding: 4 }}>
+          <div style={{ padding: '14px 16px 6px', fontSize: 17, fontWeight: 700 }}>⚙ Настройки</div>
+          {[
+            ['🔔', 'Уведомления', 'Push · email', 'Вкл.'],
+            ['🔒', 'Двухфакторная защита', 'Telegram-код', 'Активна'],
+            ['💳', 'Способы вывода', '2 карты, 1 кошелёк', '›'],
+            ['🎫', 'Реферальная программа', '12 приглашённых · 36 000 MPL', 'COBYA-KLN'],
+            ['🌐', 'Язык интерфейса', 'Русский', 'RU / EN'],
+            ['🔓', 'Разлогиниться', 'Последний вход: сегодня', '›']
+          ].map(([ic, t, sub, tr], i) => (
+            <div key={i}>
+              <Row leading={<span style={{ fontSize: 22 }}>{ic}</span>} title={t} subtitle={sub}
+                trailing={<span style={{ color: '#F5B841', fontSize: 13, fontWeight: 600 }}>{tr}</span>}
+                onClick={() => {}} />
+              {i < 5 && <div style={{ height: 1, background: 'rgb(255 255 255 / .06)', marginLeft: 16 }} />}
+            </div>
+          ))}
+        </Glass>
+      </div>
+
+      {/* Right: promo + referral + activity */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <Glass tint="violet" style={{ padding: 18 }}>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>🎫 Промокод</div>
+          <div style={{ fontSize: 12, color: '#D4B8FF', marginTop: 2, marginBottom: 12 }}>Введи код — получи бонус в MPL.</div>
+          <input value={promo} onChange={(e) => setPromo(e.target.value)} placeholder="COBYA-..."
+            style={{
+              width: '100%', padding: '12px 14px', borderRadius: 12,
+              background: 'rgb(0 0 0 / .3)', border: '1px solid rgb(255 255 255 / .1)',
+              color: '#fff', fontSize: 14, fontFamily: 'JetBrains Mono, monospace',
+              outline: 'none', marginBottom: 10, boxSizing: 'border-box'
+            }} />
+          <Btn tone="amber" style={{ width: '100%' }} onClick={() => {
+            const r = actions.redeemPromo(promo);
+            if (r.ok) { toast({ emoji: '✅', text: `+${nf(r.bonus)} MPL зачислено.` }); setPromo(''); }
+            else toast({ emoji: '❌', text: 'Код не найден.' });
+          }}>Активировать</Btn>
+          <div style={{ fontSize: 11, color: '#9AA2B4', marginTop: 8, textAlign: 'center' }}>Попробуй: <code style={{ color: '#FFD78C' }}>COBYA26</code></div>
+        </Glass>
+
+        <Glass style={{ padding: 18 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>🎫 Твоя ссылка</div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '10px 12px', borderRadius: 10,
+            background: 'rgb(0 0 0 / .3)', boxShadow: 'inset 0 0 0 1px rgb(255 255 255 / .08)'
+          }}>
+            <span style={{ flex: 1, fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#FFD78C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>cobya.coin/r/kln2026</span>
+            <button onClick={() => { navigator.clipboard?.writeText('cobya.coin/r/kln2026'); toast({ emoji: '✅', text: 'Ссылка скопирована.' }); }}
+              style={{ border: 'none', background: 'rgb(245 184 65 / .22)', color: '#FFE3A6', padding: '6px 10px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Копировать</button>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, fontSize: 12, color: '#9AA2B4' }}>
+            <span>Бонус за друга</span><span style={{ color: '#fff', fontWeight: 600 }}>30 000 MPL + 90 CBC</span>
+          </div>
+        </Glass>
+
+        <Glass style={{ padding: 4, maxHeight: 320, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '12px 16px 8px', fontSize: 14, fontWeight: 700 }}>История активности</div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {s.feed.slice(0, 12).map(f => (
+              <Row key={f.id} leading={<span style={{ fontSize: 18 }}>{f.emoji}</span>}
+                title={<span style={{ fontSize: 13, fontWeight: 500 }}>{f.text}</span>}
+                subtitle={<span style={{ fontSize: 11 }}>{f.ago}</span>} />
+            ))}
+          </div>
+        </Glass>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { Auction, Casino, Leaderboard, Profile });
+
+</script>
+
+<script type="text/babel">
+const { useState: useS, useEffect: useE } = React;
+
+// --- TOP TICKER STRIP ---
+const TickerStrip = () => {
+  const s = useStore();
+  const items = [
+    { k: 'CBC/MPL', v: nf(s.price, 2), d: '+2.41%', up: true },
+    { k: 'Jackpot', v: nf(s.casino.jackpotMpl, 0) + ' MPL', d: '+5%', up: true },
+    { k: 'Reserve liq.', v: nf(s.reserve.liquidityMpl / 1000, 0) + 'k MPL', d: '—', up: true },
+    { k: 'Active orders', v: s.orderBook.length, d: '', up: true },
+    { k: 'Farm hashrate', v: (s.mining.rate * s.mining.gpus * 3600).toFixed(2) + ' CBC/ч', d: '', up: true },
+    { k: '@societykolyan', v: '+2.4% PnL', d: '24h', up: true },
+    { k: 'Circuit', v: s.circuit ? '🔒 halted' : 'open', d: '', up: !s.circuit },
+  ];
+  const looped = [...items, ...items, ...items];
+  return (
+    <div className="ticker-strip">
+      <div className="ticker-strip-inner">
+        {looped.map((x, i) => (
+          <span key={i} style={{ fontSize: 12, color: '#C8CEDB', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ color: '#9AA2B4' }}>{x.k}</span>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, color: '#fff' }}>{x.v}</span>
+            {x.d && <span style={{ color: x.up ? '#9CEBB3' : '#FFB3AE', fontFamily: 'JetBrains Mono, monospace' }}>{x.d}</span>}
+            <span style={{ color: '#343B4C' }}>·</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// --- SIDEBAR ---
+const Sidebar = ({ active, onChange }) => {
+  const s = useStore();
+  const items = [
+    { k: 'home', icon: '◎', label: 'Главная', sub: 'Обзор' },
+    { k: 'trade', icon: '⇅', label: 'Биржа', sub: 'CBC/MPL' },
+    { k: 'mine', icon: '⛏', label: 'Майнинг', sub: `${s.mining.gpus} GPU` },
+    { k: 'auction', icon: '🎴', label: 'Аукцион', sub: `${s.auction.length} лотов` },
+    { k: 'play', icon: '🎰', label: 'Казино', sub: 'Джекпот' },
+    { k: 'ranks', icon: '🏆', label: 'Рейтинг', sub: 'Топ-8' },
+    { k: 'you', icon: '◐', label: 'Профиль', sub: s.user.handle },
+  ];
+  return (
+    <aside style={{
+      position: 'sticky', top: 36, alignSelf: 'start',
+      height: 'calc(100vh - 36px)',
+      padding: '20px 14px',
+      borderRight: '1px solid rgb(255 255 255 / .06)',
+      background: 'rgb(6 7 10 / .6)',
+      backdropFilter: 'saturate(180%) blur(30px)',
+      WebkitBackdropFilter: 'saturate(180%) blur(30px)',
+      display: 'flex', flexDirection: 'column', gap: 4,
+      overflowY: 'auto'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px 18px' }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: 10,
+          background: 'radial-gradient(circle at 30% 30%, #FFE3A6, #F5B841 55%, #D39110)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#1A0F00', fontWeight: 900, fontSize: 22,
+          boxShadow: 'inset 0 2px 4px rgb(255 255 255 / .5), 0 6px 16px rgb(245 184 65 / .4)'
+        }}>C</div>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-.02em' }}>CobyaCoin</div>
+          <div style={{ fontSize: 10, color: '#9AA2B4', letterSpacing: '.1em', textTransform: 'uppercase', fontWeight: 700 }}>Pseudo exchange</div>
+        </div>
+      </div>
+
+      {items.map(i => {
+        const on = active === i.k;
+        return (
+          <button key={i.k} onClick={() => onChange(i.k)} style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '10px 12px', borderRadius: 12,
+            background: on ? 'rgb(245 184 65 / .16)' : 'transparent',
+            boxShadow: on ? 'inset 0 0 0 1px rgb(245 184 65 / .3)' : 'none',
+            border: 'none', cursor: 'pointer', textAlign: 'left',
+            color: on ? '#FFE3A6' : '#C8CEDB',
+            transition: 'all 220ms'
+          }}
+          onMouseEnter={e => !on && (e.currentTarget.style.background = 'rgb(255 255 255 / .04)')}
+          onMouseLeave={e => !on && (e.currentTarget.style.background = 'transparent')}
+          >
+            <span style={{ fontSize: 20, width: 24, textAlign: 'center' }}>{i.icon}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>{i.label}</div>
+              <div style={{ fontSize: 11, color: '#727A8C' }}>{i.sub}</div>
+            </div>
+            {on && <span style={{ color: '#F5B841', fontWeight: 700 }}>›</span>}
+          </button>
+        );
+      })}
+
+      <div style={{ flex: 1 }} />
+
+      {/* Balance mini */}
+      <div style={{
+        padding: 14, borderRadius: 14,
+        background: 'linear-gradient(135deg, rgb(245 184 65 / .12), rgb(217 67 42 / .12))',
+        boxShadow: 'inset 0 0 0 1px rgb(255 255 255 / .08)'
+      }}>
+        <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '.1em', color: '#9AA2B4', fontWeight: 700 }}>Кошелёк</div>
+        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 700, fontSize: 17, marginTop: 4 }}>{nf(s.user.cbc)} <span style={{ color: '#F5B841', fontSize: 11 }}>CBC</span></div>
+        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, fontSize: 13, color: '#FFC4B3' }}>{nf(s.user.mpl)} <span style={{ color: '#D9432A', fontSize: 11 }}>MPL</span></div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 4px', fontSize: 11, color: '#727A8C' }}>
+        <span style={{ width: 8, height: 8, borderRadius: 999, background: '#34C759', boxShadow: '0 0 10px #34C759' }} />
+        Соединение установлено
+      </div>
+    </aside>
+  );
+};
+
+// --- GREETING HEADER ---
+const PageHeader = ({ title, sub, right }) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 18 }}>
+    <div>
+      <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-.02em', margin: 0 }}>{title}</h1>
+      {sub && <p style={{ color: '#9AA2B4', marginTop: 4, marginBottom: 0 }}>{sub}</p>}
+    </div>
+    {right}
+  </div>
+);
+
+// --- APP ---
+const App = () => {
+  const initial = (localStorage.getItem('cobya:route') || 'home');
+  const [route, setRoute] = useS(initial);
+  const { toasts, show } = useToasts();
+  const s = useStore();
+
+  useE(() => { startTicker(); }, []);
+  useE(() => { localStorage.setItem('cobya:route', route); }, [route]);
+  // Greeting toast on first load
+  useE(() => {
+    const seen = sessionStorage.getItem('cobya:greeted');
+    if (!seen) {
+      setTimeout(() => show({ emoji: '🤖', text: `Привет, ${s.user.handle} — ты в системе CobyaCoin.` }), 400);
+      sessionStorage.setItem('cobya:greeted', '1');
+    }
+  }, []);
+
+  const titles = {
+    home: { t: 'Главная', sub: `Добрый вечер, ${s.user.handle}.` },
+    trade: { t: 'Биржа', sub: 'Торгуй CBC против кленовых листьев. Курс фиксирует Центробанк.' },
+    mine: { t: 'Майнинг', sub: 'Покупай видеокарты, апгрейди ферму, собирай CBC.' },
+    auction: { t: 'Аукцион', sub: 'NFT-лоты от игроков.' },
+    play: { t: 'Казино', sub: 'Рулетка, подкидной и еженедельный джекпот.' },
+    ranks: { t: 'Рейтинг', sub: 'Топ трейдеров и майнеров сети.' },
+    you: { t: 'Профиль', sub: 'Настройки, промокоды и реферальная программа.' }
+  };
+  const tt = titles[route];
+
+  return (
+    <>
+      <TickerStrip />
+      <div className="app-shell" style={{ paddingTop: 36 }}>
+        <Sidebar active={route} onChange={setRoute} />
+        <main data-screen-label={`${route}`} style={{ padding: '22px 28px 60px', minWidth: 0, animation: 'fadeInUp .3s cubic-bezier(.22,1,.36,1)' }} key={route}>
+          {route !== 'auction' && route !== 'ranks' && (
+            <PageHeader title={tt.t} sub={tt.sub} right={
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Chip tint="success">🟢 Рынок открыт</Chip>
+                <Btn tone="glass" size="sm">🔔 3</Btn>
+              </div>
+            } />
+          )}
+          {route === 'home' && <Dashboard toast={show} goto={setRoute} />}
+          {route === 'trade' && <Exchange toast={show} />}
+          {route === 'mine' && <Mining toast={show} />}
+          {route === 'auction' && <Auction toast={show} />}
+          {route === 'play' && <Casino toast={show} />}
+          {route === 'ranks' && <Leaderboard />}
+          {route === 'you' && <Profile toast={show} />}
+        </main>
+      </div>
+      <ToastStack toasts={toasts} />
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
