@@ -3,7 +3,7 @@ import { useToasts } from "../stores/toast";
 export function ToastStack() {
   const toasts = useToasts((s) => s.toasts);
   return (
-    <div style={{
+    <div role="status" aria-live="polite" style={{
       position: "fixed", bottom: 24, right: 24, zIndex: 100,
       display: "flex", flexDirection: "column", gap: 10, pointerEvents: "none",
     }}>

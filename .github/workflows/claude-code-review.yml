@@ -12,6 +12,8 @@ on:
 
 jobs:
   claude-review:
+    # Draft maintenance work must not invoke the external AI review service.
+    if: ${{ !github.event.pull_request.draft }}
     # Optional: Filter by PR author
     # if: |
     #   github.event.pull_request.user.login == 'external-contributor' ||

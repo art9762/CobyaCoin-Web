@@ -12,34 +12,37 @@ import { CasinoPage } from "./pages/CasinoPage";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { AdminPage } from "./pages/AdminPage";
+import { onUnauthorized } from "./api/client";
+import { ToastStack } from "./components/ToastStack";
 
 export default function App() {
   const refresh = useSession((s) => s.refresh);
-  const setLoading = useSession.setState;
+  const logout = useSession((s) => s.logout);
 
   useEffect(() => {
-    if (localStorage.getItem("cobya:token")) {
-      void refresh();
-    } else {
-      setLoading({ loading: false });
-    }
-  }, [refresh, setLoading]);
+    const unsubscribe = onUnauthorized(logout);
+    void refresh();
+    return unsubscribe;
+  }, [refresh, logout]);
 
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route element={<Protected><AppLayout /></Protected>}>
-        <Route index element={<Navigate to="/home" replace />} />
-        <Route path="/home" element={<DashboardPage />} />
-        <Route path="/trade" element={<ExchangePage />} />
-        <Route path="/mining" element={<MiningPage />} />
-        <Route path="/auction" element={<AuctionPage />} />
-        <Route path="/casino" element={<CasinoPage />} />
-        <Route path="/ranks" element={<LeaderboardPage />} />
-        <Route path="/me" element={<ProfilePage />} />
-        <Route path="/admin" element={<Protected requireAdmin><AdminPage /></Protected>} />
-      </Route>
-      <Route path="*" element={<Navigate to="/home" replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<Protected><AppLayout /></Protected>}>
+          <Route index element={<Navigate to="/home" replace />} />
+          <Route path="/home" element={<DashboardPage />} />
+          <Route path="/trade" element={<ExchangePage />} />
+          <Route path="/mining" element={<MiningPage />} />
+          <Route path="/auction" element={<AuctionPage />} />
+          <Route path="/casino" element={<CasinoPage />} />
+          <Route path="/ranks" element={<LeaderboardPage />} />
+          <Route path="/me" element={<ProfilePage />} />
+          <Route path="/admin" element={<Protected requireAdmin><AdminPage /></Protected>} />
+        </Route>
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
+      <ToastStack />
+    </>
   );
 }
