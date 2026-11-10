@@ -7,7 +7,6 @@ import { useToasts } from "../stores/toast";
 import type { Wallet } from "../types";
 import { Btn } from "./Btn";
 import { Chip } from "./Chip";
-import { ToastStack } from "./ToastStack";
 import { nf } from "../utils/format";
 
 const NAV = [
@@ -209,7 +208,6 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
-      <ToastStack />
     </>
   );
 }

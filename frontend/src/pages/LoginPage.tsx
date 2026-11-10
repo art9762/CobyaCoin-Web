@@ -8,6 +8,7 @@ import { Glass } from "../components/Glass";
 import { Btn } from "../components/Btn";
 import { Chip } from "../components/Chip";
 import { CoinMark } from "../components/Marks";
+import { returnPath } from "../utils/returnPath";
 
 declare global {
   interface Window {
@@ -37,13 +38,20 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const setSession = useSession((s) => s.setSession);
+  const user = useSession((s) => s.user);
+  const loading = useSession((s) => s.loading);
   const show = useToasts((s) => s.show);
 
   const [config, setConfig] = useState<PublicConfig | null>(null);
   const [busy, setBusy] = useState(false);
   const refCode = params.get("ref") ?? undefined;
+  const destination = returnPath(params.get("from"));
   const tgContainerRef = useRef<HTMLDivElement>(null);
   const googleContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (user && !loading) navigate(destination, { replace: true });
+  }, [user, loading, navigate, destination]);
 
   useEffect(() => {
     publicConfig().then(setConfig).catch(() => setConfig({
@@ -61,7 +69,7 @@ export function LoginPage() {
         const resp = await loginTelegram(user, refCode);
         await setSession(resp.access_token);
         show({ emoji: "🤖", text: "Вход через Telegram выполнен." });
-        navigate("/home", { replace: true });
+        navigate(destination, { replace: true });
       } catch (e) {
         show({ emoji: "❌", text: e instanceof Error ? e.message : "Telegram login failed" });
       } finally {
@@ -79,7 +87,8 @@ export function LoginPage() {
     s.async = true;
     tgContainerRef.current.innerHTML = "";
     tgContainerRef.current.appendChild(s);
-  }, [config?.telegram_bot_username, navigate, setSession, show, refCode]);
+    return () => { delete window.onTelegramAuth; };
+  }, [config?.enable_telegram_auth, config?.telegram_bot_username, navigate, setSession, show, refCode, destination]);
 
   // ===== Google =====
   useEffect(() => {
@@ -95,7 +104,7 @@ export function LoginPage() {
             const r = await loginGoogle(resp.credential, refCode);
             await setSession(r.access_token);
             show({ emoji: "🤖", text: "Вход через Google выполнен." });
-            navigate("/home", { replace: true });
+            navigate(destination, { replace: true });
           } catch (e) {
             show({ emoji: "❌", text: e instanceof Error ? e.message : "Google login failed" });
           } finally {
@@ -116,7 +125,7 @@ export function LoginPage() {
     s.async = true;
     s.onload = init;
     document.head.appendChild(s);
-  }, [config?.google_client_id, navigate, setSession, show, refCode]);
+  }, [config?.enable_google_auth, config?.google_client_id, navigate, setSession, show, refCode, destination]);
 
   // ===== Apple =====
   const appleReady = useMemo(
@@ -147,7 +156,7 @@ export function LoginPage() {
       const session = await loginApple(token, refCode);
       await setSession(session.access_token);
       show({ emoji: "🍎", text: "Вход через Apple выполнен." });
-      navigate("/home", { replace: true });
+      navigate(destination, { replace: true });
     } catch (e) {
       show({ emoji: "❌", text: e instanceof Error ? e.message : "Apple login failed" });
     } finally {
